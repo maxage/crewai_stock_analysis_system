@@ -1,0 +1,149 @@
+# 数据收集任务
+market_research_task:
+  description: >
+    对{company}进行全面的市场研究，包括：
+    1. 最近3-6个月的股价走势分析
+    2. 行业竞争态势和市场份额分析
+    3. 相关市场新闻和重大事件梳理
+    4. 分析师评级和观点汇总
+    5. 宏观经济环境对该公司的影响
+  expected_output: >
+    详细的市场研究报告，包含数据来源、关键发现和趋势分析，
+    格式为结构化的Markdown文档，字数不少于800字。
+  agent: market_researcher
+
+financial_data_collection_task:
+  description: >
+    分析{company}的财务健康状况：
+    1. 最新季度财报关键指标提取（营收、利润、毛利率等）
+    2. 过去3年的财务趋势分析
+    3. 负债比率和现金流状况评估
+    4. 与同行业主要竞争对手的财务对比
+    5. 财务健康状况综合评分
+  expected_output: >
+    完整的财务分析报告，包含详细的财务指标对比分析、
+    趋势图表和风险提示，输出为结构化数据格式。
+  agent: financial_data_expert
+
+technical_analysis_task:
+  description: >
+    对{company}进行技术面分析：
+    1. 主要技术指标计算（MA、RSI、MACD、KDJ等）
+    2. 价格趋势和关键支撑阻力位识别
+    3. 成交量分析和量价关系研究
+    4. 图表模式识别和形态分析
+    5. 技术面综合评级
+  expected_output: >
+    技术分析报告，包含技术指标数值、图表分析、
+    交易信号建议，格式为技术分析标准格式。
+  agent: technical_analyst
+
+# 分析任务
+fundamental_analysis_task:
+  description: >
+    深入进行基本面分析：
+    1. 商业模式评估和可持续性分析
+    2. 竞争优势识别和护城河分析
+    3. 管理团队质量和公司治理评估
+    4. 成长性和盈利能力预测
+    5. 内在价值评估（DCF、可比公司等）
+  expected_output: >
+    基本面分析报告，包含公司价值评估、成长性预测、
+    竞争优势分析和投资价值判断。
+  agent: fundamental_analyst
+
+risk_assessment_task:
+  description: >
+    全面风险评估：
+    1. 市场风险（系统性风险、行业风险）
+    2. 公司特有风险（经营风险、财务风险）
+    3. 流动性风险和估值风险
+    4. 监管和政策风险
+    5. ESG相关风险分析
+    6. 风险等级评定和应对建议
+  expected_output: >
+    风险评估报告，包含风险识别、等级评定、
+    影响程度分析和风险控制建议。
+  agent: risk_assessment_specialist
+
+industry_analysis_task:
+  description: >
+    行业地位分析：
+    1. 行业规模和增长趋势分析
+    2. {company}在行业中的市场份额和地位
+    3. 主要竞争对手分析和对比
+    4. 行业发展前景预测
+    5. 技术变革和颠覆性风险
+  expected_output: >
+    行业分析报告，包含行业概况、竞争格局、
+    公司地位分析和发展前景预测。
+  agent: industry_expert
+
+# 决策任务
+investment_recommendation_task:
+  description: >
+    基于所有分析结果制定投资建议：
+    1. 综合评估投资价值和风险收益比
+    2. 确定合理的估值区间和目标价位
+    3. 给出明确的投资建议（买入/增持/持有/减持/卖出）
+    4. 制定具体的投资策略和时机建议
+    5. 提供风险提示和止损建议
+  expected_output: >
+    完整的投资建议报告，包含投资评级、目标价位、
+    策略建议和风险提示，格式为专业投资报告。
+  agent: investment_strategy_advisor
+  output_file: investment_report.md
+
+report_generation_task:
+  description: >
+    生成最终的投资分析报告：
+    1. 整合所有分析结果和数据
+    2. 按照标准格式编写完整报告
+    3. 添加图表和可视化内容
+    4. 确保报告逻辑清晰、内容完整
+    5. 质量检查和格式优化
+  expected_output: >
+    最终的投资分析报告（Markdown格式），包含执行摘要、
+    分析过程、结论建议等完整章节。
+  agent: report_generator
+  output_file: final_investment_report.md
+
+quality_control_task:
+  description: >
+    执行质量控制和验证：
+    1. 验证所有数据的准确性和一致性
+    2. 检查分析逻辑的合理性
+    3. 评估结论的可靠性
+    4. 确保报告格式规范
+    5. 提出改进建议
+  expected_output: >
+    质量控制报告，包含验证结果、问题识别、
+    改进建议和最终质量评级。
+  agent: quality_control_specialist
+
+# 特殊任务
+data_validation_task:
+  description: >
+    验证和清洗数据：
+    1. 检查所有数据源的可靠性
+    2. 识别和处理异常数据
+    3. 验证数据的一致性和完整性
+    4. 数据标准化处理
+    5. 生成数据质量报告
+  expected_output: >
+    数据验证报告，包含数据质量评估、
+    异常数据记录和处理结果。
+  agent: data_validation_expert
+
+sentiment_analysis_task:
+  description: >
+    分析市场情绪：
+    1. 收集和分析新闻情绪
+    2. 社交媒体讨论情绪分析
+    3. 分析师观点情绪评估
+    4. 市场预期分析
+    5. 情绪趋势预测
+  expected_output: >
+    市场情绪分析报告，包含情绪指标、
+    趋势分析和预期评估。
+  agent: market_sentiment_analyst
