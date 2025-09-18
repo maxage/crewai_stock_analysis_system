@@ -1,16 +1,29 @@
-"""
-金融数据工具包
+"""金融数据工具包
 包含股票数据获取、财务计算等工具
 """
-from crewai_tools import BaseTool
+from crewai import Agent, Task
 from typing import Dict, Any, List, Optional
 import yfinance as yf
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import logging
+import time
 
+# 自定义工具基类
+class BaseTool:
+    """工具基类"""
+    name: str = "Base Tool"
+    description: str = "基础工具类"
+    
+    def _run(self, *args, **kwargs):
+        """运行工具"""
+        raise NotImplementedError("子类必须实现_run方法")
+
+# 设置日志配置为DEBUG级别，确保所有调试信息都能被记录
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)  # 确保该模块的日志级别为DEBUG
 
 
 class YFinanceTool(BaseTool):
@@ -31,31 +44,55 @@ class YFinanceTool(BaseTool):
             股票数据报告
         """
         try:
+            # 添加请求延迟以避免Too Many Requests错误
+            time.sleep(1)
+            # 添加详细的请求参数日志
+            logger.debug(f"[API请求] 开始获取 {ticker} 的数据，周期: {period}")
             logger.info(f"获取 {ticker} 的数据，周期: {period}")
 
             # 获取股票对象
+            logger.debug(f"[API请求] 创建yfinance Ticker对象: {ticker}")
+            # 添加额外延迟
+            time.sleep(0.5)
             stock = yf.Ticker(ticker)
 
             # 获取基本信息
+            logger.debug(f"[API请求] 获取基本信息: {ticker}")
             info = stock.info
+            logger.debug(f"[API响应] 成功获取基本信息，字段数量: {len(info) if isinstance(info, dict) else 0}")
 
             # 获取历史价格数据
+            logger.debug(f"[API请求] 获取历史价格数据: {ticker}, 周期: {period}")
+            # 添加延迟避免请求过于频繁
+            time.sleep(0.5)
             hist = stock.history(period=period)
+            logger.debug(f"[API响应] 成功获取历史数据，数据行数: {len(hist) if hasattr(hist, 'shape') else 0}")
 
             # 获取财务数据
+            logger.debug(f"[API请求] 获取财务报表数据: {ticker}")
+            # 添加延迟避免请求过于频繁
+            time.sleep(0.5)
             financials = stock.financials
+            # 添加额外延迟
+            time.sleep(0.3)
             balance_sheet = stock.balance_sheet
+            # 添加额外延迟
+            time.sleep(0.3)
             cashflow = stock.cashflow
+            logger.debug(f"[API响应] 成功获取财务数据，财报行数: {len(financials) if hasattr(financials, 'shape') else 0}")
 
             # 生成数据报告
             report = self._generate_stock_report(ticker, info, hist, financials, balance_sheet, cashflow)
+            logger.debug(f"[数据处理] 成功生成数据报告，长度: {len(report)} 字符")
 
             logger.info(f"成功获取 {ticker} 的数据")
             return report
 
         except Exception as e:
+            # 添加详细的错误日志
             error_msg = f"获取 {ticker} 数据失败: {str(e)}"
             logger.error(error_msg)
+            logger.debug(f"[API错误] 详细信息 - 股票代码: {ticker}, 周期: {period}, 错误类型: {type(e).__name__}, 错误详情: {str(e)}")
             return error_msg
 
     def _generate_stock_report(self, ticker: str, info: Dict, hist: pd.DataFrame,

@@ -45,7 +45,6 @@ class SmartInvestmentFlow(Flow[AnalysisState]):
         self.data_collection_crew = DataCollectionCrew()
         self.analysis_crew = AnalysisCrew()
         self.decision_crew = DecisionCrew()
-        self.state = AnalysisState()
 
     @start()
     def initialize_analysis(self):

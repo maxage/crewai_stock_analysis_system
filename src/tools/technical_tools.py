@@ -2,7 +2,7 @@
 技术分析工具包
 包含技术指标计算、图表生成等技术分析功能
 """
-from crewai_tools import BaseTool
+from crewai import Agent, Task
 from typing import Dict, Any, List, Optional, Tuple
 import pandas as pd
 import numpy as np
@@ -11,7 +11,20 @@ import seaborn as sns
 from datetime import datetime, timedelta
 import logging
 
+# 自定义工具基类
+class BaseTool:
+    """工具基类"""
+    name: str = "Base Tool"
+    description: str = "基础工具类"
+    
+    def _run(self, *args, **kwargs):
+        """运行工具"""
+        raise NotImplementedError("子类必须实现_run方法")
+
+# 设置日志配置为DEBUG级别
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 # 设置中文字体
 plt.rcParams['font.sans-serif'] = ['SimHei', 'Arial Unicode MS']
@@ -36,43 +49,70 @@ class TechnicalAnalysisTool(BaseTool):
             技术分析报告
         """
         try:
-            import json
-            data = json.loads(price_data)
+            # 添加详细的调试日志
+            logger.debug(f"[技术分析] 开始分析，价格数据长度: {len(price_data)} 字符, 分析类型: {analysis_type}")
             logger.info(f"开始技术分析，类型: {analysis_type}")
 
+            # 解析价格数据
+            import json
+            logger.debug(f"[数据处理] 开始解析价格数据")
+            data = json.loads(price_data)
+            logger.debug(f"[数据处理] 成功解析价格数据，数据点数量: {len(data)}")
+
             # 转换为DataFrame
+            logger.debug(f"[数据处理] 开始转换为DataFrame")
             df = pd.DataFrame(data)
+            logger.debug(f"[数据处理] 成功转换为DataFrame，原始列: {', '.join(df.columns)}")
+            
             df['Date'] = pd.to_datetime(df['Date'])
             df.set_index('Date', inplace=True)
+            logger.debug(f"[数据处理] 设置日期索引完成，时间范围: {df.index.min()} 至 {df.index.max()}")
 
             # 确保数据完整性
             required_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
+            logger.debug(f"[数据验证] 验证必要列: {', '.join(required_columns)}")
             if not all(col in df.columns for col in required_columns):
-                raise ValueError("价格数据缺少必要的列")
+                missing = [col for col in required_columns if col not in df.columns]
+                logger.debug(f"[数据验证] 缺少必要列: {', '.join(missing)}")
+                raise ValueError(f"价格数据缺少必要的列: {', '.join(missing)}")
+            logger.debug(f"[数据验证] 数据完整性检查通过")
 
             results = {}
+            logger.debug(f"[分析流程] 开始执行分析流程")
 
             if analysis_type in ["comprehensive", "trend"]:
+                logger.debug(f"[分析模块] 开始趋势指标计算")
                 results['trend_indicators'] = self._calculate_trend_indicators(df)
+                logger.debug(f"[分析模块] 完成趋势指标计算，指标数量: {len(results['trend_indicators'])}")
 
             if analysis_type in ["comprehensive", "momentum"]:
+                logger.debug(f"[分析模块] 开始动量指标计算")
                 results['momentum_indicators'] = self._calculate_momentum_indicators(df)
+                logger.debug(f"[分析模块] 完成动量指标计算，指标数量: {len(results['momentum_indicators'])}")
 
             if analysis_type in ["comprehensive", "volatility"]:
+                logger.debug(f"[分析模块] 开始波动性指标计算")
                 results['volatility_indicators'] = self._calculate_volatility_indicators(df)
+                logger.debug(f"[分析模块] 完成波动性指标计算，指标数量: {len(results['volatility_indicators'])}")
 
             if analysis_type in ["comprehensive", "volume"]:
+                logger.debug(f"[分析模块] 开始成交量指标计算")
                 results['volume_indicators'] = self._calculate_volume_indicators(df)
+                logger.debug(f"[分析模块] 完成成交量指标计算，指标数量: {len(results['volume_indicators'])}")
 
             # 生成分析报告
+            logger.debug(f"[报告生成] 开始生成技术分析报告，结果类别数量: {len(results)}")
             report = self._generate_technical_report(df, results, analysis_type)
+            logger.debug(f"[报告生成] 成功生成分析报告，报告长度: {len(report)} 字符")
 
             logger.info("技术分析完成")
             return report
 
         except Exception as e:
+            # 添加详细的错误日志
             error_msg = f"技术分析失败: {str(e)}"
             logger.error(error_msg)
+            logger.debug(f"[分析错误] 详细信息 - 数据长度: {len(price_data)} 字符, 分析类型: {analysis_type}, 错误类型: {type(e).__name__}, 错误详情: {str(e)}")
             return error_msg
 
     def _calculate_trend_indicators(self, df: pd.DataFrame) -> Dict[str, Any]:

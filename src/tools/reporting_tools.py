@@ -2,13 +2,26 @@
 报告生成工具
 用于生成各种分析报告和文档
 """
-from crewai_tools import BaseTool
+from crewai import Agent, Task
 from typing import Dict, Any, List, Optional
 import json
 from datetime import datetime
 import logging
 
+# 自定义工具基类
+class BaseTool:
+    """工具基类"""
+    name: str = "Base Tool"
+    description: str = "基础工具类"
+    
+    def _run(self, *args, **kwargs):
+        """运行工具"""
+        raise NotImplementedError("子类必须实现_run方法")
+
+# 设置日志配置为DEBUG级别
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class ReportWritingTool(BaseTool):
@@ -29,26 +42,47 @@ class ReportWritingTool(BaseTool):
             报告内容
         """
         try:
-            data = json.loads(report_data)
+            # 添加详细的调试日志
+            logger.debug(f"[报告生成] 开始生成报告，数据长度: {len(report_data)} 字符, 报告类型: {report_type}")
             logger.info(f"生成报告，类型: {report_type}")
 
+            # 解析报告数据
+            logger.debug(f"[数据处理] 开始解析报告数据")
+            data = json.loads(report_data)
+            logger.debug(f"[数据处理] 成功解析报告数据，包含主要字段: {', '.join([k for k in data.keys() if k != 'detailed_data'])}...")
+
+            # 根据报告类型生成对应报告
+            logger.debug(f"[报告选择] 根据报告类型选择生成方法: {report_type}")
             if report_type == "investment_analysis":
+                logger.debug(f"[报告生成] 开始生成投资分析报告")
                 report = self._generate_investment_analysis_report(data)
+                logger.debug(f"[报告生成] 完成投资分析报告生成")
             elif report_type == "summary":
+                logger.debug(f"[报告生成] 开始生成摘要报告")
                 report = self._generate_summary_report(data)
+                logger.debug(f"[报告生成] 完成摘要报告生成")
             elif report_type == "executive_brief":
+                logger.debug(f"[报告生成] 开始生成执行简报")
                 report = self._generate_executive_brief(data)
+                logger.debug(f"[报告生成] 完成执行简报生成")
             elif report_type == "detailed":
+                logger.debug(f"[报告生成] 开始生成详细报告")
                 report = self._generate_detailed_report(data)
+                logger.debug(f"[报告生成] 完成详细报告生成")
             else:
+                logger.debug(f"[报告生成] 使用通用报告生成方法")
                 report = self._generate_generic_report(data)
 
+            # 记录报告生成结果
+            logger.debug(f"[报告完成] 报告生成完成，报告长度: {len(report)} 字符")
             logger.info("报告生成完成")
             return report
 
         except Exception as e:
+            # 添加详细的错误日志
             error_msg = f"生成报告失败: {str(e)}"
             logger.error(error_msg)
+            logger.debug(f"[报告错误] 详细信息 - 数据长度: {len(report_data)} 字符, 报告类型: {report_type}, 错误类型: {type(e).__name__}, 错误详情: {str(e)}")
             return error_msg
 
     def _generate_investment_analysis_report(self, data: Dict) -> str:

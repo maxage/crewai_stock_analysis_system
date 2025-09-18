@@ -1,17 +1,18 @@
 """
 批量分析流程控制
-使用Flows实现高效的批量股票分析
+使用Flows实现批量股票分析流程控制
 """
 from crewai.flow.flow import Flow, listen, start, router
 from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import logging
 from datetime import datetime
-import time
-import concurrent.futures
 
-# 导入系统和团队
-from src.stock_analysis_system import StockAnalysisSystem
+# 导入团队和工具
+from src.crews.data_collection_crew import DataCollectionCrew
+from src.crews.analysis_crew import AnalysisCrew
+from src.crews.decision_crew import DecisionCrew
+from src.utils.batch_analyzer import BatchStockAnalyzer
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -21,23 +22,16 @@ logger = logging.getLogger(__name__)
 class BatchAnalysisState(BaseModel):
     """批量分析状态模型"""
     stocks: List[Dict[str, str]] = []
-    completed_stocks: List[Dict[str, Any]] = []
-    failed_stocks: List[Dict[str, Any]] = []
-    in_progress: List[str] = []
-    current_batch: List[Dict[str, str]] = []
-    batch_size: int = 3
-    max_workers: int = 3
-    total_stocks: int = 0
-    completed_count: int = 0
-    failed_count: int = 0
+    results: Dict[str, Any] = {}
+    errors: List[Dict[str, Any]] = []
+    progress: Dict[str, Any] = {}
+    strategy: str = "parallel"
+    max_workers: int = 5
+    current_stage: str = "initialized"
     start_time: Optional[str] = None
     end_time: Optional[str] = None
-    current_stage: str = "initialized"
-    progress_percentage: float = 0.0
-    average_analysis_time: float = 0.0
-    estimated_remaining_time: Optional[float] = None
-    errors: List[str] = []
-    warnings: List[str] = []
+    success_count: int = 0
+    failure_count: int = 0
 
 
 class BatchAnalysisFlow(Flow[BatchAnalysisState]):
@@ -45,419 +39,207 @@ class BatchAnalysisFlow(Flow[BatchAnalysisState]):
 
     def __init__(self):
         super().__init__()
-        self.stock_analysis_system = StockAnalysisSystem()
-        self.state = BatchAnalysisState()
+        self.batch_analyzer = BatchStockAnalyzer()
 
     @start()
     def initialize_batch_analysis(self):
         """初始化批量分析"""
         logger.info("=== 初始化批量分析流程 ===")
-        self.state.start_time = datetime.now().isoformat()
-        self.state.current_stage = "initialized"
+        self.state.current_stage = "initialization"
+        self.state.start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-        # 获取批量分析参数
-        print("=== 批量分析配置 ===")
+        # 设置默认股票列表
+        default_stocks = [
+            {'company': '苹果公司', 'ticker': 'AAPL'},
+            {'company': '微软', 'ticker': 'MSFT'},
+            {'company': '谷歌', 'ticker': 'GOOGL'},
+            {'company': '亚马逊', 'ticker': 'AMZN'},
+            {'company': '特斯拉', 'ticker': 'TSLA'}
+        ]
 
-        # 股票列表输入方式
-        input_method = input("选择输入方式 (1:手动输入 2:文件导入): ")
+        self.state.stocks = default_stocks
+        self.state.strategy = "parallel"
+        self.state.max_workers = 3
 
-        if input_method == "1":
-            stocks = self._get_manual_input()
-        else:
-            stocks = self._get_file_input()
-
-        if not stocks:
-            logger.error("没有提供股票列表")
-            return {"success": False, "error": "股票列表为空"}
-
-        self.state.stocks = stocks
-        self.state.total_stocks = len(stocks)
-
-        # 获取批量配置
-        self.state.batch_size = int(input("请输入批次大小 (建议3-5): ") or "3")
-        self.state.max_workers = int(input("请输入最大并发数 (建议2-4): ") or "3")
-
-        logger.info(f"开始批量分析 {len(stocks)} 只股票")
-        return {
-            "stocks": stocks,
-            "batch_size": self.state.batch_size,
-            "max_workers": self.state.max_workers
-        }
+        logger.info(f"准备分析 {len(default_stocks)} 只股票")
+        return {"stocks": default_stocks, "strategy": "parallel", "max_workers": 3}
 
     @listen("initialize_batch_analysis")
-    def validate_stock_list(self, batch_config):
+    def validate_stock_list(self, config_data):
         """验证股票列表"""
         logger.info("=== 验证股票列表 ===")
         self.state.current_stage = "validation"
 
         try:
-            # 基本验证
-            valid_stocks = []
-            invalid_stocks = []
+            stocks = config_data.get('stocks', [])
+            if not stocks:
+                return {"success": False, "error": "股票列表为空"}
 
-            for stock in batch_config['stocks']:
-                if self._validate_stock_format(stock):
-                    valid_stocks.append(stock)
-                else:
-                    invalid_stocks.append(stock)
+            # 验证股票格式
+            for stock in stocks:
+                if not isinstance(stock, dict) or 'company' not in stock or 'ticker' not in stock:
+                    return {"success": False, "error": f"股票格式错误: {stock}"}
 
-            if invalid_stocks:
-                warning_msg = f"发现 {len(invalid_stocks)} 个无效股票格式"
-                self.state.warnings.append(warning_msg)
-                logger.warning(warning_msg)
-
-            logger.info(f"验证完成: {len(valid_stocks)} 个有效股票")
-            return {
-                "success": True,
-                "valid_stocks": valid_stocks,
-                "invalid_stocks": invalid_stocks
-            }
+            self.state.stocks = stocks
+            logger.info(f"验证通过: {len(stocks)} 只股票")
+            return {"success": True, "stocks": stocks}
 
         except Exception as e:
-            error_msg = f"股票列表验证失败: {str(e)}"
-            self.state.errors.append(error_msg)
-            logger.error(error_msg)
+            logger.error(f"股票列表验证失败: {str(e)}")
             return {"success": False, "error": str(e)}
 
-    @router(validate_stock_list)
-    def determine_batch_strategy(self):
-        """确定批次策略"""
-        logger.info("=== 确定批次策略 ===")
-
-        total_stocks = len(self.state.stocks)
-        batch_size = self.state.batch_size
-        max_workers = self.state.max_workers
-
-        if total_stocks <= batch_size:
-            logger.info("股票数量较少，使用单批次分析")
-            return "single_batch"
-        elif total_stocks <= batch_size * 3:
-            logger.info("股票数量适中，使用多批次顺序分析")
-            return "sequential_batches"
-        else:
-            logger.info("股票数量较多，使用并行批次分析")
-            return "parallel_batches"
-
-    @listen("single_batch")
-    def process_single_batch(self):
-        """处理单批次"""
-        logger.info("=== 处理单批次 ===")
-        self.state.current_stage = "single_batch_processing"
+    @listen("validate_stock_list")
+    def execute_batch_analysis(self, validation_result):
+        """执行批量分析"""
+        logger.info("=== 执行批量分析 ===")
+        self.state.current_stage = "execution"
 
         try:
-            self.state.current_batch = self.state.stocks.copy()
-            results = self._process_batch(self.state.current_batch)
+            if not validation_result.get('success', False):
+                return {"success": False, "error": "验证失败"}
 
-            self._update_batch_results(results)
-            logger.info("单批次处理完成")
-            return results
+            # 设置进度回调
+            def progress_callback(progress):
+                self.state.progress = progress
+                logger.info(f"进度: {progress.get('percentage', 0):.1f}%")
 
-        except Exception as e:
-            error_msg = f"单批次处理失败: {str(e)}"
-            self.state.errors.append(error_msg)
-            logger.error(error_msg)
-            return {"success": False, "error": str(e)}
+            self.batch_analyzer.set_progress_callback(progress_callback)
 
-    @listen("sequential_batches")
-    def process_sequential_batches(self):
-        """顺序处理多批次"""
-        logger.info("=== 顺序处理多批次 ===")
-        self.state.current_stage = "sequential_batch_processing"
+            # 执行批量分析
+            result = self.batch_analyzer.analyze_multiple_stocks(
+                self.state.stocks,
+                strategy=self.state.strategy
+            )
 
-        try:
-            all_results = []
-            stocks = self.state.stocks.copy()
-            batch_size = self.state.batch_size
+            if result['success']:
+                self.state.results = result['results']
+                self.state.errors = result['errors']
+                self.state.success_count = result['success_count']
+                self.state.failure_count = result['failure_count']
+                self.state.progress = result['progress']
 
-            # 分批处理
-            for i in range(0, len(stocks), batch_size):
-                batch = stocks[i:i + batch_size]
-                self.state.current_batch = batch
-
-                logger.info(f"处理批次 {i//batch_size + 1}/{(len(stocks) + batch_size - 1)//batch_size}")
-                batch_results = self._process_batch(batch)
-                all_results.extend(batch_results)
-
-                self._update_batch_results(batch_results)
-
-                # 批次间暂停，避免API限制
-                if i + batch_size < len(stocks):
-                    time.sleep(2)
-
-            logger.info("顺序批次处理完成")
-            return all_results
+                logger.info("批量分析完成")
+                return result
+            else:
+                logger.error(f"批量分析失败: {result.get('error', '未知错误')}")
+                return {"success": False, "error": result.get('error')}
 
         except Exception as e:
-            error_msg = f"顺序批次处理失败: {str(e)}"
-            self.state.errors.append(error_msg)
-            logger.error(error_msg)
+            logger.error(f"批量分析异常: {str(e)}")
             return {"success": False, "error": str(e)}
 
-    @listen("parallel_batches")
-    def process_parallel_batches(self):
-        """并行处理多批次"""
-        logger.info("=== 并行处理多批次 ===")
-        self.state.current_stage = "parallel_batch_processing"
-
-        try:
-            stocks = self.state.stocks.copy()
-            batch_size = self.state.batch_size
-            max_workers = min(self.state.max_workers, (len(stocks) + batch_size - 1) // batch_size)
-
-            # 分批次
-            batches = [stocks[i:i + batch_size] for i in range(0, len(stocks), batch_size)]
-
-            logger.info(f"总共 {len(batches)} 个批次，最大并发 {max_workers}")
-
-            all_results = []
-            with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-                # 提交所有批次任务
-                future_to_batch = {
-                    executor.submit(self._process_batch_with_delay, batch, i): i
-                    for i, batch in enumerate(batches)
-                }
-
-                # 等待所有批次完成
-                for future in concurrent.futures.as_completed(future_to_batch):
-                    batch_index = future_to_batch[future]
-                    try:
-                        batch_results = future.result()
-                        all_results.extend(batch_results)
-                        self._update_batch_results(batch_results)
-
-                        progress = (self.state.completed_count + self.state.failed_count) / len(stocks) * 100
-                        logger.info(f"批次 {batch_index + 1}/{len(batches)} 完成，总进度: {progress:.1f}%")
-
-                    except Exception as e:
-                        error_msg = f"批次 {batch_index + 1} 处理失败: {str(e)}"
-                        self.state.errors.append(error_msg)
-                        logger.error(error_msg)
-
-            logger.info("并行批次处理完成")
-            return all_results
-
-        except Exception as e:
-            error_msg = f"并行批次处理失败: {str(e)}"
-            self.state.errors.append(error_msg)
-            logger.error(error_msg)
-            return {"success": False, "error": str(e)}
-
-    @listen(["process_single_batch", "process_sequential_batches", "process_parallel_batches"])
-    def generate_batch_summary(self, all_results):
+    @listen("execute_batch_analysis")
+    def generate_batch_summary(self, analysis_result):
         """生成批量分析摘要"""
         logger.info("=== 生成批量分析摘要 ===")
-        self.state.current_stage = "summary_generation"
-        self.state.end_time = datetime.now().isoformat()
+        self.state.current_stage = "summary"
 
         try:
-            summary = self.stock_analysis_system.generate_summary_report(all_results)
+            if not analysis_result.get('success', False):
+                return {"success": False, "error": "分析失败"}
 
-            # 保存摘要报告
-            summary_path = self._save_summary_report(summary)
+            # 生成摘要
+            summary = self._generate_summary_report()
+
+            # 导出结果
+            export_path = self.batch_analyzer.export_results("json")
+
+            self.state.end_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
             logger.info("批量分析摘要生成完成")
             return {
                 "success": True,
                 "summary": summary,
-                "summary_path": summary_path,
-                "total_stocks": self.state.total_stocks,
-                "completed_count": self.state.completed_count,
-                "failed_count": self.state.failed_count,
-                "success_rate": (self.state.completed_count / self.state.total_stocks * 100) if self.state.total_stocks > 0 else 0
+                "export_path": export_path,
+                "total_stocks": len(self.state.stocks),
+                "success_count": self.state.success_count,
+                "failure_count": self.state.failure_count,
+                "success_rate": (self.state.success_count / len(self.state.stocks)) * 100 if self.state.stocks else 0,
+                "start_time": self.state.start_time,
+                "end_time": self.state.end_time
             }
 
         except Exception as e:
-            error_msg = f"生成摘要失败: {str(e)}"
-            self.state.errors.append(error_msg)
-            logger.error(error_msg)
+            logger.error(f"生成摘要异常: {str(e)}")
             return {"success": False, "error": str(e)}
 
-    # 辅助方法
-    def _get_manual_input(self):
-        """获取手动输入的股票列表"""
-        stocks = []
-        print("请输入股票列表（格式：公司名称,股票代码），输入 'done' 结束：")
-
-        while True:
-            user_input = input("> ").strip()
-            if user_input.lower() == 'done':
-                break
-
-            try:
-                parts = user_input.split(',')
-                if len(parts) == 2:
-                    company = parts[0].strip()
-                    ticker = parts[1].strip()
-                    stocks.append({'company': company, 'ticker': ticker})
-                    print(f"已添加: {company} ({ticker})")
-                else:
-                    print("格式错误，请使用：公司名称,股票代码")
-            except Exception as e:
-                print(f"输入错误: {e}")
-
-        return stocks
-
-    def _get_file_input(self):
-        """从文件导入股票列表"""
-        stocks = []
-        filepath = input("请输入股票列表文件路径: ").strip()
-
-        try:
-            with open(filepath, 'r', encoding='utf-8') as f:
-                for line_num, line in enumerate(f, 1):
-                    line = line.strip()
-                    if line and not line.startswith('#'):
-                        parts = line.split(',')
-                        if len(parts) == 2:
-                            company = parts[0].strip()
-                            ticker = parts[1].strip()
-                            stocks.append({'company': company, 'ticker': ticker})
-                        else:
-                            logger.warning(f"文件第 {line_num} 行格式错误: {line}")
-
-            logger.info(f"从文件导入 {len(stocks)} 只股票")
-            return stocks
-
-        except FileNotFoundError:
-            logger.error(f"文件不存在: {filepath}")
-            return []
-        except Exception as e:
-            logger.error(f"读取文件失败: {str(e)}")
-            return []
-
-    def _validate_stock_format(self, stock):
-        """验证股票格式"""
-        if not isinstance(stock, dict):
-            return False
-        if 'company' not in stock or 'ticker' not in stock:
-            return False
-        if not stock['company'] or not stock['ticker']:
-            return False
-        return True
-
-    def _process_batch(self, batch):
-        """处理单个批次"""
-        logger.info(f"开始处理批次: {len(batch)} 只股票")
-        return self.stock_analysis_system.analyze_multiple_stocks(batch)
-
-    def _process_batch_with_delay(self, batch, batch_index):
-        """带延迟的批次处理（用于并行）"""
-        # 随机延迟，避免同时请求
-        import random
-        delay = random.uniform(0, 2)
-        time.sleep(delay)
-
-        logger.info(f"开始处理批次 {batch_index + 1}: {len(batch)} 只股票")
-        return self._process_batch(batch)
-
-    def _update_batch_results(self, results):
-        """更新批次结果"""
-        for result in results:
-            if result.get('success', False):
-                self.state.completed_stocks.append(result)
-                self.state.completed_count += 1
-            else:
-                self.state.failed_stocks.append(result)
-                self.state.failed_count += 1
-
-        # 更新进度
-        total_processed = self.state.completed_count + self.state.failed_count
-        self.state.progress_percentage = (total_processed / self.state.total_stocks) * 100
-
-        # 更新平均分析时间
-        if total_processed > 0:
-            elapsed_time = (datetime.now().timestamp() - datetime.fromisoformat(self.state.start_time).timestamp())
-            self.state.average_analysis_time = elapsed_time / total_processed
-
-            # 估算剩余时间
-            remaining_stocks = self.state.total_stocks - total_processed
-            self.state.estimated_remaining_time = remaining_stocks * self.state.average_analysis_time
-
-    def _save_summary_report(self, summary):
-        """保存摘要报告"""
-        import os
-        os.makedirs('reports', exist_ok=True)
-
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"batch_analysis_summary_{timestamp}.md"
-        filepath = os.path.join('reports', filename)
-
-        try:
-            with open(filepath, 'w', encoding='utf-8') as f:
-                f.write(summary)
-            logger.info(f"摘要报告已保存: {filepath}")
-            return filepath
-        except Exception as e:
-            logger.error(f"保存摘要报告失败: {str(e)}")
-            return ""
-
-    def get_batch_status(self):
-        """获取批量分析状态"""
+    def _generate_summary_report(self) -> Dict[str, Any]:
+        """生成摘要报告"""
         return {
-            "total_stocks": self.state.total_stocks,
-            "completed_count": self.state.completed_count,
-            "failed_count": self.state.failed_count,
-            "progress_percentage": self.state.progress_percentage,
-            "current_stage": self.state.current_stage,
-            "average_analysis_time": self.state.average_analysis_time,
-            "estimated_remaining_time": self.state.estimated_remaining_time,
-            "errors_count": len(self.state.errors),
-            "warnings_count": len(self.state.warnings)
-        }
-
-    def get_detailed_results(self):
-        """获取详细结果"""
-        return {
-            "completed_stocks": self.state.completed_stocks,
-            "failed_stocks": self.state.failed_stocks,
+            "analysis_time": self.state.start_time,
+            "total_stocks": len(self.state.stocks),
+            "successful_analyses": self.state.success_count,
+            "failed_analyses": self.state.failure_count,
+            "success_rate": (self.state.success_count / len(self.state.stocks)) * 100 if self.state.stocks else 0,
+            "average_score": sum(result.get('overall_score', 0) for result in self.state.results.values()) / len(self.state.results) if self.state.results else 0,
             "errors": self.state.errors,
-            "warnings": self.state.warnings,
-            "start_time": self.state.start_time,
-            "end_time": self.state.end_time
+            "top_performers": [
+                {"ticker": ticker, "score": result.get('overall_score', 0)}
+                for ticker, result in sorted(self.state.results.items(), key=lambda x: x[1].get('overall_score', 0), reverse=True)[:3]
+            ],
+            "bottom_performers": [
+                {"ticker": ticker, "score": result.get('overall_score', 0)}
+                for ticker, result in sorted(self.state.results.items(), key=lambda x: x[1].get('overall_score', 0))[:3]
+            ]
         }
+
+    def run_batch_analysis(self, stocks: List[Dict[str, str]], strategy: str = "parallel", max_workers: int = 5) -> Dict[str, Any]:
+        """运行批量分析"""
+        self.state.stocks = stocks
+        self.state.strategy = strategy
+        self.state.max_workers = max_workers
+        self.state.start_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        try:
+            # 直接使用批量分析器
+            self.batch_analyzer = BatchStockAnalyzer(max_workers=max_workers)
+
+            # 设置进度回调
+            def progress_callback(progress):
+                self.state.progress = progress
+                logger.info(f"进度: {progress.get('percentage', 0):.1f}%")
+
+            self.batch_analyzer.set_progress_callback(progress_callback)
+
+            # 执行分析
+            result = self.batch_analyzer.analyze_multiple_stocks(stocks, strategy=strategy)
+
+            # 更新状态
+            self.state.results = result.get('results', {})
+            self.state.errors = result.get('errors', [])
+            self.state.success_count = result.get('success_count', 0)
+            self.state.failure_count = result.get('failed_count', 0)
+            self.state.end_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            # 生成最终结果
+            return {
+                "success": True,
+                "summary": self._generate_summary_report(),
+                "results": result.get('results', {}),
+                "errors": result.get('errors', []),
+                "total_stocks": len(stocks),
+                "success_count": self.state.success_count,
+                "failure_count": self.state.failure_count,
+                "success_rate": (self.state.success_count / len(stocks)) * 100 if stocks else 0,
+                "start_time": self.state.start_time,
+                "end_time": self.state.end_time
+            }
+
+        except Exception as e:
+            return {"success": False, "error": str(e)}
 
 
 # 使用示例
 if __name__ == "__main__":
-    # 创建批量分析流程
     flow = BatchAnalysisFlow()
+    # result = flow.kickoff()  # 启动交互式流程
 
-    print("=== 启动批量分析流程 ===")
-    print("系统将智能选择最佳的批量处理策略")
-    print("请按照提示配置批量分析参数\n")
+    # 或者直接运行
+    test_stocks = [
+        {'company': '苹果公司', 'ticker': 'AAPL'},
+        {'company': '微软', 'ticker': 'MSFT'},
+        {'company': '谷歌', 'ticker': 'GOOGL'}
+    ]
 
-    # 启动流程
-    result = flow.kickoff()
-
-    print("\n=== 批量分析流程完成 ===")
-
-    if result.get('success', False):
-        print(f"总股票数: {result['total_stocks']}")
-        print(f"成功分析: {result['completed_count']}")
-        print(f"失败分析: {result['failed_count']}")
-        print(f"成功率: {result['success_rate']:.1f}%")
-        print(f"摘要报告: {result['summary_path']}")
-
-        # 显示状态
-        status = flow.get_batch_status()
-        print(f"\n=== 批量分析状态 ===")
-        for key, value in status.items():
-            if isinstance(value, float):
-                print(f"{key}: {value:.2f}")
-            else:
-                print(f"{key}: {value}")
-
-    else:
-        print(f"批量分析失败: {result.get('error', '未知错误')}")
-
-    # 显示详细错误信息
-    detailed_results = flow.get_detailed_results()
-    if detailed_results['errors']:
-        print(f"\n=== 错误详情 ===")
-        for error in detailed_results['errors']:
-            print(f"- {error}")
-
-    if detailed_results['warnings']:
-        print(f"\n=== 警告信息 ===")
-        for warning in detailed_results['warnings']:
-            print(f"- {warning}")
+    result = flow.run_batch_analysis(test_stocks, strategy="parallel")
+    print(result)

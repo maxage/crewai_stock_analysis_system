@@ -202,8 +202,14 @@ class StockAnalysisSystem:
 """
 
         for result in successful_results:
-            rating = result.get('investment_rating', {})
-            report += f"- **{result['company']} ({result['ticker']})**: {rating.get('rating', '未评级')}\n"
+            investment_rating = result.get('investment_rating', {})
+            # 检查investment_rating的类型
+            if isinstance(investment_rating, dict):
+                rating = investment_rating.get('rating', '未评级')
+            else:
+                # 如果不是字典，直接使用或设置为未评级
+                rating = str(investment_rating) if investment_rating else '未评级'
+            report += f"- **{result['company']} ({result['ticker']})**: {rating}\n"
 
         if failed_results:
             report += "\n### 失败分析股票\n"
@@ -217,7 +223,12 @@ class StockAnalysisSystem:
             # 投资评级统计
             rating_stats = {}
             for result in successful_results:
-                rating = result.get('investment_rating', {}).get('rating', '未评级')
+                investment_rating = result.get('investment_rating', {})
+                # 检查investment_rating的类型
+                if isinstance(investment_rating, dict):
+                    rating = investment_rating.get('rating', '未评级')
+                else:
+                    rating = str(investment_rating) if investment_rating else '未评级'
                 rating_stats[rating] = rating_stats.get(rating, 0) + 1
 
             report += "### 投资评级分布\n"

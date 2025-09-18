@@ -2,13 +2,26 @@
 基本面分析工具
 包含公司基本面评估、价值分析等功能
 """
-from crewai_tools import BaseTool
+from crewai import Agent, Task
 from typing import Dict, Any, List, Optional
 import json
 from datetime import datetime
 import logging
 
+# 自定义工具基类
+class BaseTool:
+    """工具基类"""
+    name: str = "Base Tool"
+    description: str = "基础工具类"
+    
+    def _run(self, *args, **kwargs):
+        """运行工具"""
+        raise NotImplementedError("子类必须实现_run方法")
+
+# 设置日志配置为DEBUG级别
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class FundamentalAnalysisTool(BaseTool):
@@ -29,32 +42,51 @@ class FundamentalAnalysisTool(BaseTool):
             基本面分析报告
         """
         try:
-            data = json.loads(company_data)
+            # 添加详细的调试日志
+            logger.debug(f"[基本面分析] 开始分析，公司数据长度: {len(company_data)} 字符, 分析类型: {analysis_type}")
             logger.info(f"开始基本面分析，类型: {analysis_type}")
+            
+            # 解析公司数据
+            logger.debug(f"[数据处理] 开始解析公司数据")
+            data = json.loads(company_data)
+            logger.debug(f"[数据处理] 成功解析公司数据，包含字段: {', '.join(data.keys())}")
 
             results = {}
+            logger.debug(f"[分析流程] 开始执行分析流程")
 
             if analysis_type in ["comprehensive", "valuation"]:
+                logger.debug(f"[分析模块] 开始估值分析")
                 results['valuation_analysis'] = self._analyze_valuation(data)
+                logger.debug(f"[分析模块] 完成估值分析")
 
             if analysis_type in ["comprehensive", "growth"]:
+                logger.debug(f"[分析模块] 开始增长分析")
                 results['growth_analysis'] = self._analyze_growth(data)
+                logger.debug(f"[分析模块] 完成增长分析")
 
             if analysis_type in ["comprehensive", "quality"]:
+                logger.debug(f"[分析模块] 开始质量分析")
                 results['quality_analysis'] = self._analyze_quality(data)
+                logger.debug(f"[分析模块] 完成质量分析")
 
             if analysis_type in ["comprehensive", "financial_health"]:
+                logger.debug(f"[分析模块] 开始财务健康分析")
                 results['financial_health'] = self._analyze_financial_health(data)
+                logger.debug(f"[分析模块] 完成财务健康分析")
 
             # 生成分析报告
+            logger.debug(f"[报告生成] 开始生成基本面分析报告，分析结果数量: {len(results)}")
             report = self._generate_fundamental_report(results, analysis_type)
+            logger.debug(f"[报告生成] 成功生成分析报告，报告长度: {len(report)} 字符")
 
             logger.info("基本面分析完成")
             return report
 
         except Exception as e:
+            # 添加详细的错误日志
             error_msg = f"基本面分析失败: {str(e)}"
             logger.error(error_msg)
+            logger.debug(f"[分析错误] 详细信息 - 数据长度: {len(company_data)} 字符, 分析类型: {analysis_type}, 错误类型: {type(e).__name__}, 错误详情: {str(e)}")
             return error_msg
 
     def _analyze_valuation(self, data: Dict) -> Dict[str, Any]:

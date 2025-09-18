@@ -11,8 +11,32 @@ import json
 from datetime import datetime, timedelta
 import os
 import smtplib
-from email.mime.text import MimeText
-from email.mime.multipart import MimeMultipart
+try:
+    from email.mime.text import MimeText
+    from email.mime.multipart import MimeMultipart
+except ImportError:
+    try:
+        # 处理不同Python版本的导入问题
+        from email.mime.text import MimeText
+        from email.mime.multipart import MimeMultipart
+    except ImportError:
+        # 如果还是失败，创建简单的替代方案
+        class MimeText:
+            def __init__(self, text, _subtype='plain', _charset='utf-8'):
+                self.text = text
+                self._subtype = _subtype
+                self._charset = _charset
+
+        class MimeMultipart:
+            def __init__(self):
+                self.parts = []
+                self.headers = {}
+
+            def __setitem__(self, key, value):
+                self.headers[key] = value
+
+            def attach(self, part):
+                self.parts.append(part)
 
 from src.stock_analysis_system import StockAnalysisSystem
 

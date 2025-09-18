@@ -1,0 +1,59 @@
+{
+  "company": "苹果公司",
+  "ticker": "AAPL",
+  "collection_data": {
+    "market_research": "苹果公司的市场研究数据",
+    "financial_data": "AAPL的财务数据",
+    "technical_analysis": "AAPL的技术分析数据",
+    "data_validation": "数据验证通过"
+  },
+  "analysis_data": {
+    "fundamental_analysis": {
+      "analysis_text": "苹果公司的基本面分析结果",
+      "financial_score": 75.5,
+      "growth_potential": "高"
+    },
+    "risk_assessment": {
+      "analysis_text": "AAPL的风险评估结果",
+      "risk_level": "中等",
+      "risk_factors": [
+        "市场风险",
+        "行业风险"
+      ]
+    },
+    "industry_analysis": {
+      "analysis_text": "苹果公司的行业地位分析",
+      "market_position": "领先",
+      "competitiveness": "强"
+    }
+  },
+  "decision_data": {
+    "investment_recommendation": {
+      "analysis_text": "苹果公司的投资建议结果",
+      "recommendation": "买入",
+      "confidence": 0.85,
+      "target_price": 200.0
+    },
+    "report_generation": {
+      "analysis_text": "AAPL的投资报告",
+      "report_quality": "高",
+      "completeness": 95
+    },
+    "quality_control": {
+      "analysis_text": "苹果公司的质量评估结果",
+      "quality_score": 90,
+      "reliability": "高"
+    }
+  },
+  "scores": {
+    "fundamental_score": 75.5,
+    "risk_score": 30.0,
+    "industry_score": 80.0,
+    "overall_score": 72.0
+  },
+  "investment_rating": {
+    "rating": "未评级",
+    "code": "NR",
+    "color": "black"
+  }
+}

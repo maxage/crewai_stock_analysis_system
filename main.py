@@ -7,6 +7,10 @@ import sys
 import argparse
 import logging
 from typing import List, Dict, Any
+from dotenv import load_dotenv
+
+# 加载.env文件中的环境变量
+load_dotenv()
 
 # 添加src目录到路径
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))

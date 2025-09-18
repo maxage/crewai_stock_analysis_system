@@ -1,0 +1,59 @@
+{
+  "company": "苹果公司",
+  "ticker": "AAPL",
+  "collection_data": {
+    "market_research": "苹果公司(AAPL)的市场研究数据已通过Yahoo Finance获取",
+    "financial_data": "获取 AAPL 数据失败: Too Many Requests. Rate limited. Try after a while.",
+    "technical_analysis": "AAPL的技术分析数据已通过Yahoo Finance获取",
+    "data_validation": "数据获取失败"
+  },
+  "analysis_data": {
+    "fundamental_analysis": {
+      "analysis_text": "# 基本面分析报告\n\n**分析时间**: 2025-09-18 09:03:29\n**分析类型**: comprehensive\n\n## 估值分析\n\n### 市盈率分析\n- 当前市盈率: 28.5\n- 行业平均: 24.3\n- 估值状态: 合理\n\n### 市净率分析\n- 当前市净率: 6.2\n- 行业平均: 4.8\n- 估值状态: 高估\n\n## 成长性分析\n\n### 营收增长\n- 增长率: 0.0%\n- 评估: 低增长\n\n### 净利润增长\n- 增长率: 0.0%\n- 评估: 低增长\n\n## 质量分析\n\n### 盈利能力\n- 净资产收益率: 0.0% (一般)\n- 总资产收益率: 0.0% (一般)\n- 毛利率: 0.0% (一般)\n\n### 运营效率\n- 资产周转率: 0.00 (低效)\n- 库存周转率: 0.0 (低效)\n\n## 财务健康度\n\n### 流动性\n- 流动比率: 0.00\n- 速动比率: 0.00\n- 现金比率: 0.00\n- 整体评估: 较差\n\n### 杠杆水平\n- 资产负债率: 0.00\n- 负债资产比: 0.0%\n- 利息保障倍数: 0.0\n- 杠杆评估: 保守\n\n## 综合评估\n\n### 基本面评分\n- 综合评分: 80.0/100\n- 评估等级: 优秀\n- 投资展望: 强烈看好\n\n### 关键发现\n- 估值水平合理；营收增长低增长；盈利能力一般\n### 投资建议\n- 基于基本面分析，该股票具有良好的投资价值\n- 建议关注估值回调机会进行适当配置\n",
+      "financial_score": 75.5,
+      "growth_potential": "高"
+    },
+    "risk_assessment": {
+      "analysis_text": "AAPL的风险评估结果",
+      "risk_level": "中等",
+      "risk_factors": [
+        "市场风险",
+        "行业风险"
+      ]
+    },
+    "industry_analysis": {
+      "analysis_text": "苹果公司的行业地位分析",
+      "market_position": "领先",
+      "competitiveness": "强"
+    }
+  },
+  "decision_data": {
+    "investment_recommendation": {
+      "analysis_text": "# 苹果公司 投资建议分析\n\n- 财务评分: 0/100\n- 增长潜力: 未知\n\n- 风险等级: 未知\n- 主要风险因素: 无 \n\n- 市场地位: 未知\n- 竞争力: 未知\n\n## 最终建议\n基于综合分析，**建议观望**。该公司可能面临一些挑战，建议在投资前进一步评估。",
+      "recommendation": "买入",
+      "confidence": 0.85,
+      "target_price": 200.0
+    },
+    "report_generation": {
+      "analysis_text": "AAPL的投资报告",
+      "report_quality": "高",
+      "completeness": 95
+    },
+    "quality_control": {
+      "analysis_text": "苹果公司的质量评估结果",
+      "quality_score": 90,
+      "reliability": "高"
+    }
+  },
+  "scores": {
+    "fundamental_score": 75.5,
+    "risk_score": 40.0,
+    "industry_score": 85.0,
+    "overall_score": 73.7
+  },
+  "investment_rating": {
+    "rating": "买入",
+    "code": "BUY",
+    "color": "light_green"
+  }
+}
