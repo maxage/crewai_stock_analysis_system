@@ -55,18 +55,98 @@ class DecisionCrew:
             logger.error(f"加载配置文件失败: {config_file}, 错误: {str(e)}")
             return {}
 
+        # 如果配置文件加载失败，使用默认配置
+        if not self.agents_config:
+            logger.warning("使用内置默认agents配置")
+            self.agents_config = self._get_default_agents_config()
+        if not self.tasks_config:
+            logger.warning("使用内置默认tasks配置")
+            self.tasks_config = self._get_default_tasks_config()
+
+    def _get_default_agents_config(self) -> Dict[str, Any]:
+        """获取默认的agents配置"""
+        return {
+            "investment_advisor": {
+                "role": "投资策略顾问",
+                "goal": "为{company}制定投资策略，提供专业的投资建议",
+                "backstory": "你是一位经验丰富的投资策略顾问，擅长制定长期投资策略和资产配置方案。"
+            },
+            "report_generator": {
+                "role": "报告生成专家",
+                "goal": "生成专业的投资分析报告",
+                "backstory": "你是一位专业的报告生成专家，擅长将复杂的分析结果转化为清晰易懂的投资报告。"
+            },
+            "quality_monitor": {
+                "role": "质量控制专家",
+                "goal": "监控和保证投资决策的质量",
+                "backstory": "你是一位严格的质量控制专家，确保所有投资决策都符合高标准和专业要求。"
+            }
+        }
+
+    def _get_default_tasks_config(self) -> Dict[str, Any]:
+        """获取默认的tasks配置"""
+        return {
+            "investment_strategy_task": {
+                "description": "为{company}制定投资策略",
+                "expected_output": "详细的投资策略报告"
+            },
+            "risk_assessment_task": {
+                "description": "评估{company}的投资风险",
+                "expected_output": "风险评估报告"
+            },
+            "portfolio_optimization_task": {
+                "description": "优化{company}的投资组合",
+                "expected_output": "投资组合优化建议"
+            },
+            "market_timing_task": {
+                "description": "分析{company}的市场时机",
+                "expected_output": "市场时机分析报告"
+            },
+            "compliance_review_task": {
+                "description": "审查{company}投资的合规性",
+                "expected_output": "合规审查报告"
+            },
+            "collective_decision_task": {
+                "description": "对{company}进行集体投资决策",
+                "expected_output": "集体投资决策结果"
+            },
+            "report_generation_task": {
+                "description": "生成{company}的投资报告",
+                "expected_output": "完整的投资分析报告"
+            },
+            "quality_assurance_task": {
+                "description": "保证{company}投资决策的质量",
+                "expected_output": "质量保证报告"
+            }
+        }
+
     @agent
     def investment_advisor(self) -> Agent:
         """投资策略顾问 - 负责制定投资策略"""
-        return Agent(
-            config=self.agents_config['investment_advisor'],
-            verbose=True,
-            tools=[ReportWritingTool()],
-            allow_delegation=True,
-            max_iter=10,
-            memory=True,
-            cache=True,
-        )
+        # 检查配置是否存在，如果不存在则使用默认配置
+        if 'investment_advisor' in self.agents_config:
+            return Agent(
+                config=self.agents_config['investment_advisor'],
+                verbose=True,
+                tools=[ReportWritingTool()],
+                allow_delegation=True,
+                max_iter=10,
+                memory=True,
+                cache=True,
+            )
+        else:
+            # 使用默认配置
+            return Agent(
+                role='投资策略顾问',
+                goal='为{company}制定投资策略，提供专业的投资建议',
+                backstory='你是一位经验丰富的投资策略顾问，擅长制定长期投资策略和资产配置方案。',
+                verbose=True,
+                tools=[ReportWritingTool()],
+                allow_delegation=True,
+                max_iter=10,
+                memory=True,
+                cache=True,
+            )
 
     @agent
     def risk_manager(self) -> Agent:
@@ -160,39 +240,81 @@ class DecisionCrew:
     @agent
     def report_generator(self) -> Agent:
         """报告生成器 - 负责生成高质量投资报告"""
-        return Agent(
-            config=self.agents_config['report_generator'],
-            verbose=True,
-            tools=[ReportWritingTool(), DataExportTool()],
-            allow_delegation=False,  # 报告生成器专注于写作
-            max_iter=8,
-            memory=True,
-            cache=True,
-        )
+        # 检查配置是否存在，如果不存在则使用默认配置
+        if 'report_generator' in self.agents_config:
+            return Agent(
+                config=self.agents_config['report_generator'],
+                verbose=True,
+                tools=[ReportWritingTool(), DataExportTool()],
+                allow_delegation=False,  # 报告生成器专注于写作
+                max_iter=8,
+                memory=True,
+                cache=True,
+            )
+        else:
+            # 使用默认配置
+            return Agent(
+                role='报告生成专家',
+                goal='生成专业的投资分析报告',
+                backstory='你是一位专业的报告生成专家，擅长将复杂的分析结果转化为清晰易懂的投资报告。',
+                verbose=True,
+                tools=[ReportWritingTool(), DataExportTool()],
+                allow_delegation=False,  # 报告生成器专注于写作
+                max_iter=8,
+                memory=True,
+                cache=True,
+            )
 
     @agent
     def quality_assurance_specialist(self) -> Agent:
         """质量保证专家 - 负责质量控制"""
-        return Agent(
-            config=self.agents_config['quality_monitor'],
-            verbose=True,
-            tools=[ReportWritingTool()],
-            allow_delegation=False,
-            max_iter=6,
-            memory=True,
-            cache=True,
-        )
+        # 检查配置是否存在，如果不存在则使用默认配置
+        if 'quality_monitor' in self.agents_config:
+            return Agent(
+                config=self.agents_config['quality_monitor'],
+                verbose=True,
+                tools=[ReportWritingTool()],
+                allow_delegation=False,
+                max_iter=6,
+                memory=True,
+                cache=True,
+            )
+        else:
+            # 使用默认配置
+            return Agent(
+                role='质量控制专家',
+                goal='监控和保证投资决策的质量',
+                backstory='你是一位严格的质量控制专家，确保所有投资决策都符合高标准和专业要求。',
+                verbose=True,
+                tools=[ReportWritingTool()],
+                allow_delegation=False,
+                max_iter=6,
+                memory=True,
+                cache=True,
+            )
 
     @task
     def investment_strategy_task(self) -> Task:
         """投资策略制定任务"""
-        return Task(
-            config=self.tasks_config['investment_strategy_task'],
-            tools=[ReportWritingTool()],
-            context=[],  # 将在执行时动态设置
-            human_input=False,
-            output_file='investment_strategy_report.md',
-        )
+        # 检查配置是否存在，如果不存在则使用默认配置
+        if 'investment_strategy_task' in self.tasks_config:
+            return Task(
+                config=self.tasks_config['investment_strategy_task'],
+                tools=[ReportWritingTool()],
+                context=[],  # 将在执行时动态设置
+                human_input=False,
+                output_file='investment_strategy_report.md',
+            )
+        else:
+            # 使用默认配置
+            return Task(
+                description='为{company}制定投资策略，提供专业的投资建议',
+                expected_output='详细的投资策略报告',
+                tools=[ReportWritingTool()],
+                context=[],  # 将在执行时动态设置
+                human_input=False,
+                output_file='investment_strategy_report.md',
+            )
 
     @task
     def risk_assessment_task(self) -> Task:
@@ -453,19 +575,43 @@ class DecisionCrew:
             }
 
     def _prepare_decision_inputs(self, company: str, ticker: str,
-                              analysis_data: Dict[str, Any] = None) -> Dict[str, Any]:
+                              analysis_data: Any = None) -> Dict[str, Any]:
         """准备决策输入数据"""
         inputs = {
             'company': company,
             'ticker': ticker,
-            'analysis_data': analysis_data or {},
+            'analysis_data': {},
             'expert_opinions': {}  # 将在决策过程中填充
         }
 
-        # 如果有分析数据，整合到决策输入中
+        # 处理分析数据 - 支持CrewOutput对象和字典
         if analysis_data:
-            # 提取各专业分析结果
-            for analysis_type, analysis_result in analysis_data.items():
+            processed_data = {}
+
+            # 如果是CrewOutput对象，提取result
+            if hasattr(analysis_data, 'result'):
+                result_data = analysis_data.result
+                if hasattr(result_data, '__dict__'):
+                    # 如果result有__dict__属性，转换为字典
+                    processed_data = result_data.__dict__
+                elif isinstance(result_data, dict):
+                    # 如果result本身就是字典
+                    processed_data = result_data
+                else:
+                    # 其他情况，将整个result作为raw_data
+                    processed_data = {'raw_data': str(result_data)}
+            elif isinstance(analysis_data, dict):
+                # 如果是字典，直接使用
+                processed_data = analysis_data
+            else:
+                # 其他类型，转换为字符串
+                processed_data = {'raw_data': str(analysis_data)}
+
+            # 更新inputs中的analysis_data
+            inputs['analysis_data'] = processed_data
+
+            # 提取各专业分析结果到输入中
+            for analysis_type, analysis_result in processed_data.items():
                 if isinstance(analysis_result, dict):
                     inputs[f'{analysis_type}_analysis'] = analysis_result.get('analysis_text', '')
                 else:
