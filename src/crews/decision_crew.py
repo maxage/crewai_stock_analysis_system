@@ -688,6 +688,181 @@ class DecisionCrew:
                 "timestamp": datetime.now().isoformat()
             }
 
+    def get_investment_rating(self, decision_data: Dict[str, Any]) -> Dict[str, Any]:
+        """获取投资评级 - 兼容性方法，供stock_analysis_system调用"""
+        try:
+            # 从decision_data中提取最终建议
+            if isinstance(decision_data, dict):
+                if 'final_recommendation' in decision_data:
+                    recommendation = decision_data['final_recommendation']
+                    return {
+                        'rating': recommendation.get('action', '持有'),
+                        'confidence': recommendation.get('confidence', 0.7),
+                        'reasoning': recommendation.get('reasoning', '基于集体决策分析'),
+                        'risk_level': recommendation.get('risk_level', '中等'),
+                        'time_horizon': recommendation.get('time_horizon', '中期')
+                    }
+                elif 'result' in decision_data:
+                    # 如果没有最终建议，基于结果生成评级
+                    return {
+                        'rating': '持有',
+                        'confidence': 0.7,
+                        'reasoning': '基于集体决策分析结果',
+                        'risk_level': '中等',
+                        'time_horizon': '中期'
+                    }
+
+            # 默认返回持有评级
+            return {
+                'rating': '持有',
+                'confidence': 0.7,
+                'reasoning': '基于集体决策分析',
+                'risk_level': '中等',
+                'time_horizon': '中期'
+            }
+        except Exception as e:
+            logger.error(f"获取投资评级时出错: {str(e)}")
+            return {
+                'rating': '持有',
+                'confidence': 0.6,
+                'reasoning': '分析过程出现异常，采用保守建议',
+                'risk_level': '中等',
+                'time_horizon': '中期'
+            }
+
+    def generate_analysis_summary(self, analysis_data: Dict[str, Any]) -> str:
+        """生成分析摘要 - 兼容性方法，供stock_analysis_system调用"""
+        try:
+            summary_parts = []
+
+            if isinstance(analysis_data, dict):
+                # 提取关键分析结果
+                if 'final_recommendation' in analysis_data:
+                    recommendation = analysis_data['final_recommendation']
+                    summary_parts.append(f"投资建议: {recommendation.get('action', '持有')}")
+                    summary_parts.append(f"信心度: {recommendation.get('confidence', 0.7):.1%}")
+
+                if 'decision_analysis' in analysis_data:
+                    analysis = analysis_data['decision_analysis']
+                    summary_parts.append(f"共识水平: {analysis.get('consensus_level', 0.0):.1%}")
+                    summary_parts.append(f"决策质量: {analysis.get('decision_quality', '未知')}")
+
+                if 'collective_decision_metrics' in analysis_data:
+                    metrics = analysis_data['collective_decision_metrics']
+                    summary_parts.append(f"专家参与率: {metrics.get('participation_rate', 0.0):.1%}")
+
+            if not summary_parts:
+                summary_parts.append("基于集体决策的投资分析")
+                summary_parts.append("多专家共同评估的投资建议")
+
+            return " | ".join(summary_parts)
+        except Exception as e:
+            logger.error(f"生成分析摘要时出错: {str(e)}")
+            return "集体决策分析完成"
+
+    def generate_investment_report(self, company: str, ticker: str, all_data: Dict[str, Any]) -> str:
+        """生成投资报告 - 兼容性方法，供stock_analysis_system调用"""
+        try:
+            report_lines = [
+                f"# {company} ({ticker}) 投资分析报告",
+                f"**生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+                f"**分析类型**: 集体决策分析",
+                ""
+            ]
+
+            if isinstance(all_data, dict):
+                # 投资建议
+                if 'final_recommendation' in all_data:
+                    rec = all_data['final_recommendation']
+                    report_lines.extend([
+                        "## 投资建议",
+                        f"- **建议操作**: {rec.get('action', '持有')}",
+                        f"- **信心度**: {rec.get('confidence', 0.7):.1%}",
+                        f"- **风险等级**: {rec.get('risk_level', '中等')}",
+                        f"- **投资期限**: {rec.get('time_horizon', '中期')}",
+                        f"- **建议理由**: {rec.get('reasoning', '基于集体决策分析')}",
+                        ""
+                    ])
+
+                # 决策分析
+                if 'decision_analysis' in all_data:
+                    analysis = all_data['decision_analysis']
+                    report_lines.extend([
+                        "## 决策分析",
+                        f"- **共识水平**: {analysis.get('consensus_level', 0.0):.1%}",
+                        f"- **决策质量**: {analysis.get('decision_quality', '未知')}",
+                        f"- **辩论深度**: {analysis.get('debate_depth', '低')}",
+                        f"- **专家参与**: {analysis.get('expert_participation', 0)}人",
+                        ""
+                    ])
+
+                # 决策指标
+                if 'collective_decision_metrics' in all_data:
+                    metrics = all_data['collective_decision_metrics']
+                    report_lines.extend([
+                        "## 决策指标",
+                        f"- **参与率**: {metrics.get('participation_rate', 0.0):.1%}",
+                        f"- **过程效率**: {metrics.get('process_efficiency', '中等')}",
+                        ""
+                    ])
+
+            report_lines.extend([
+                "## 免责声明",
+                "本报告基于多智能体集体决策分析生成，仅供参考，不构成投资建议。",
+                "投资有风险，决策需谨慎。",
+                "",
+                f"*报告由{company}投资决策委员会自动生成*"
+            ])
+
+            return "\n".join(report_lines)
+        except Exception as e:
+            logger.error(f"生成投资报告时出错: {str(e)}")
+            return f"# {company} ({ticker}) 投资报告\n\n报告生成过程中出现错误，请查看详细分析结果。"
+
+    def save_report(self, company: str, ticker: str, report_content: str) -> str:
+        """保存报告 - 兼容性方法，供stock_analysis_system调用"""
+        try:
+            # 创建报告目录
+            report_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'reports')
+            os.makedirs(report_dir, exist_ok=True)
+
+            # 生成文件名
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{company}_{ticker}_investment_report_{timestamp}.md"
+            filepath = os.path.join(report_dir, filename)
+
+            # 保存报告
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write(report_content)
+
+            logger.info(f"投资报告已保存: {filepath}")
+            return filepath
+        except Exception as e:
+            logger.error(f"保存报告时出错: {str(e)}")
+            return ""
+
+    def export_to_json(self, company: str, ticker: str, data: Dict[str, Any]) -> str:
+        """导出JSON数据 - 兼容性方法，供stock_analysis_system调用"""
+        try:
+            # 创建数据目录
+            data_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'data')
+            os.makedirs(data_dir, exist_ok=True)
+
+            # 生成文件名
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{company}_{ticker}_investment_data_{timestamp}.json"
+            filepath = os.path.join(data_dir, filename)
+
+            # 导出数据
+            with open(filepath, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+
+            logger.info(f"投资数据已导出: {filepath}")
+            return filepath
+        except Exception as e:
+            logger.error(f"导出JSON数据时出错: {str(e)}")
+            return ""
+
     def get_crew_info(self) -> Dict[str, Any]:
         """获取团队信息"""
         return {

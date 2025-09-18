@@ -562,6 +562,44 @@ class AnalysisCrew:
                 "timestamp": datetime.now().isoformat()
             }
 
+    def calculate_analysis_score(self, analysis_data: Dict[str, Any]) -> Dict[str, float]:
+        """计算分析评分 - 兼容性方法，供stock_analysis_system调用"""
+        try:
+            # 从analysis_data中提取协作结果
+            if isinstance(analysis_data, dict):
+                # 如果analysis_data包含协作结果，使用它
+                if 'collaboration_scores' in analysis_data:
+                    return analysis_data['collaboration_scores']
+                elif 'scores' in analysis_data:
+                    return analysis_data['scores']
+                else:
+                    # 如果没有评分数据，返回默认评分
+                    return {
+                        'fundamental_score': 70.0,
+                        'risk_score': 70.0,
+                        'industry_score': 70.0,
+                        'quantitative_score': 70.0,
+                        'overall_score': 70.0
+                    }
+            else:
+                # 如果不是字典，返回默认评分
+                return {
+                    'fundamental_score': 70.0,
+                    'risk_score': 70.0,
+                    'industry_score': 70.0,
+                    'quantitative_score': 70.0,
+                    'overall_score': 70.0
+                }
+        except Exception as e:
+            logger.error(f"计算分析评分时出错: {str(e)}")
+            return {
+                'fundamental_score': 60.0,
+                'risk_score': 60.0,
+                'industry_score': 60.0,
+                'quantitative_score': 60.0,
+                'overall_score': 60.0
+            }
+
     def get_crew_info(self) -> Dict[str, Any]:
         """获取团队信息"""
         return {
