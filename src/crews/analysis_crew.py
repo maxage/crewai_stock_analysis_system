@@ -13,6 +13,7 @@ from datetime import datetime
 from src.tools.fundamental_tools import FundamentalAnalysisTool
 from src.tools.technical_tools import TechnicalAnalysisTool
 from src.tools.financial_tools import FinancialCalculatorTool
+from src.utils.http_utils import with_retry
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -31,12 +32,27 @@ class AnalysisCrew:
     def _load_config(self, config_file: str) -> Dict[str, Any]:
         """加载配置文件"""
         try:
-            # 获取项目根目录
-            current_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-            config_path = os.path.join(current_dir, config_file)
+            # 确保文件名不包含路径部分
+            config_filename = os.path.basename(config_file)
+            
+            possible_paths = [
+                # 最可靠的方法：项目根目录下的config文件夹
+                os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'config', config_filename),
+                # 相对于src目录
+                os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config', config_filename),
+                # 直接路径
+                config_file,
+            ]
 
-            with open(config_path, 'r', encoding='utf-8') as f:
-                return yaml.safe_load(f)
+            for path in possible_paths:
+                if os.path.exists(path):
+                    with open(path, 'r', encoding='utf-8') as f:
+                        config_data = yaml.safe_load(f)
+                        logger.debug(f"成功加载配置文件: {path}")
+                        return config_data
+
+            logger.warning(f"未找到配置文件: {config_file}")
+            return {}
         except Exception as e:
             logger.error(f"加载配置文件失败: {config_file}, 错误: {str(e)}")
             return {}
@@ -228,9 +244,10 @@ class AnalysisCrew:
             share_crew=True,  # 允许智能体间共享信息
         )
 
+    @with_retry(max_retries=3, backoff_factor=1.0)
     def execute_collaborative_analysis(self, company: str, ticker: str,
                                     collection_data: Dict[str, Any] = None) -> Dict[str, Any]:
-        """执行真正的多智能体协作分析"""
+        """执行多智能体协作分析，带自动重试机制"""
         try:
             logger.info(f"启动多智能体协作分析: {company} ({ticker})")
 
@@ -270,6 +287,9 @@ class AnalysisCrew:
         except Exception as e:
             error_msg = f"多智能体协作分析失败: {str(e)}"
             logger.error(error_msg)
+            # 检查是否是OpenAI相关错误，是的话重新抛出异常以触发重试
+            if 'OpenAI' in str(e) or 'LiteLLM' in str(e) or '10054' in str(e):
+                raise
             return {
                 'success': False,
                 'error': error_msg,
@@ -279,30 +299,52 @@ class AnalysisCrew:
             }
 
     def _prepare_analysis_inputs(self, company: str, ticker: str,
-                               collection_data: Dict[str, Any] = None) -> Dict[str, Any]:
+                               collection_data: Any = None) -> Dict[str, Any]:
         """准备分析输入数据"""
         inputs = {
             'company': company,
             'ticker': ticker,
-            'analysis_data': collection_data or {}
+            'analysis_data': {}
         }
 
         # 如果有数据收集结果，提取关键信息
         if collection_data:
-            # 提取财务数据
-            financial_data = collection_data.get('financial_data', '')
-            if isinstance(financial_data, str) and len(financial_data) > 100:
-                inputs['financial_report'] = financial_data
-
-            # 提取市场研究数据
-            market_research = collection_data.get('market_research', '')
-            if market_research:
-                inputs['market_research'] = market_research
-
-            # 提取技术分析数据
-            technical_analysis = collection_data.get('technical_analysis', '')
-            if technical_analysis:
-                inputs['technical_analysis'] = technical_analysis
+            # 处理 CrewOutput 对象或字典
+            if hasattr(collection_data, 'result'):
+                # CrewOutput 对象
+                data_dict = collection_data.result if hasattr(collection_data.result, '__dict__') else collection_data.result
+                if isinstance(data_dict, str):
+                    # 如果 result 是字符串，直接使用
+                    inputs['analysis_data'] = {'raw_data': data_dict}
+                elif isinstance(data_dict, dict):
+                    # 如果 result 是字典，提取关键信息
+                    inputs['analysis_data'] = data_dict
+                    financial_data = data_dict.get('financial_data', '')
+                    if isinstance(financial_data, str) and len(financial_data) > 100:
+                        inputs['financial_report'] = financial_data
+                    market_research = data_dict.get('market_research', '')
+                    if market_research:
+                        inputs['market_research'] = market_research
+                    technical_analysis = data_dict.get('technical_analysis', '')
+                    if technical_analysis:
+                        inputs['technical_analysis'] = technical_analysis
+                else:
+                    inputs['analysis_data'] = {'raw_data': str(data_dict)}
+            elif isinstance(collection_data, dict):
+                # 字典类型
+                inputs['analysis_data'] = collection_data
+                financial_data = collection_data.get('financial_data', '')
+                if isinstance(financial_data, str) and len(financial_data) > 100:
+                    inputs['financial_report'] = financial_data
+                market_research = collection_data.get('market_research', '')
+                if market_research:
+                    inputs['market_research'] = market_research
+                technical_analysis = collection_data.get('technical_analysis', '')
+                if technical_analysis:
+                    inputs['technical_analysis'] = technical_analysis
+            else:
+                # 其他类型，转换为字符串
+                inputs['analysis_data'] = {'raw_data': str(collection_data)}
 
         return inputs
 
@@ -504,6 +546,21 @@ class AnalysisCrew:
             logger.error(f"分析协作质量时出错: {str(e)}")
 
         return metrics
+
+    def execute_analysis(self, company: str, ticker: str, collection_data: Dict[str, Any] = None) -> Dict[str, Any]:
+        """执行分析 - 兼容性方法，内部调用 execute_collaborative_analysis"""
+        try:
+            logger.info(f"执行分析: {company} ({ticker})")
+            return self.execute_collaborative_analysis(company, ticker, collection_data)
+        except Exception as e:
+            logger.error(f"执行分析时出错: {str(e)}")
+            return {
+                "status": "failed",
+                "error": str(e),
+                "company": company,
+                "ticker": ticker,
+                "timestamp": datetime.now().isoformat()
+            }
 
     def get_crew_info(self) -> Dict[str, Any]:
         """获取团队信息"""

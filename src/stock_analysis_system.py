@@ -12,7 +12,35 @@ from src.crews.analysis_crew import AnalysisCrew
 from src.crews.decision_crew import DecisionCrew
 
 # 设置日志
-logging.basicConfig(level=logging.INFO)
+import os
+
+# 创建日志目录（如果不存在）
+log_dir = os.path.dirname(os.path.abspath(__file__)) + '/../'
+log_file = os.path.join(log_dir, 'log.txt')
+
+# 配置日志记录器
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)  # 设置为DEBUG级别以记录更详细的信息
+
+# 清除已有的处理器
+for handler in logger.handlers[:]:
+    logger.removeHandler(handler)
+
+# 创建控制台处理器
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)  # 控制台显示DEBUG级别及以上日志
+console_formatter = logging.Formatter('%(message)s')
+console_handler.setFormatter(console_formatter)
+logger.addHandler(console_handler)
+
+# 创建文件处理器
+file_handler = logging.FileHandler(log_file, encoding='utf-8', mode='a')
+file_handler.setLevel(logging.DEBUG)  # 文件记录DEBUG级别及以上日志
+file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(file_formatter)
+logger.addHandler(file_handler)
+
+# 获取自定义logger
 logger = logging.getLogger(__name__)
 
 
@@ -58,10 +86,10 @@ class StockAnalysisSystem:
                 company, ticker
             )
 
-            if not collection_result['success']:
+            if collection_result['status'] != 'success':
                 return {
                     'success': False,
-                    'error': f"数据收集失败: {collection_result['error']}",
+                    'error': f"数据收集失败: {collection_result.get('error', '未知错误')}",
                     'company': company,
                     'ticker': ticker
                 }
@@ -69,7 +97,7 @@ class StockAnalysisSystem:
             # 第二阶段：分析
             logger.info("第二阶段：分析")
             analysis_result = self.analysis_crew.execute_analysis(
-                company, ticker, collection_result['data']
+                company, ticker, collection_result['result']
             )
 
             if not analysis_result['success']:
@@ -83,7 +111,7 @@ class StockAnalysisSystem:
             # 第三阶段：决策
             logger.info("第三阶段：决策")
             decision_result = self.decision_crew.execute_decision_process(
-                company, ticker, analysis_result['data']
+                company, ticker, analysis_result['result']
             )
 
             if not decision_result['success']:

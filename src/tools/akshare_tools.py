@@ -88,7 +88,9 @@ class AkShareTool(BaseTool):
             # 使用akshare获取股票基本信息
             # 注意：akshare的股票代码需要是带市场标识的格式，如 'sh600000' 或 'sz000001'
             stock_zh_a_spot_df = ak.stock_zh_a_spot_em()
-            stock_info = stock_zh_a_spot_df[stock_zh_a_spot_df['代码'] == ticker].iloc[0].to_dict() if not stock_zh_a_spot_df.empty else {}
+            # 安全地获取股票信息，如果找不到指定股票代码则返回空字典
+            stock_info_row = stock_zh_a_spot_df[stock_zh_a_spot_df['代码'] == ticker]
+            stock_info = stock_info_row.iloc[0].to_dict() if not stock_info_row.empty else {}
             
             # 尝试获取更多财务数据
             try:
@@ -137,11 +139,26 @@ class AkShareTool(BaseTool):
                     '最低': 'Low',
                     '成交量': 'Volume'
                 })
-                # 设置日期索引
-                stock_zh_a_daily_df['Date'] = pd.to_datetime(stock_zh_a_daily_df['日期'])
-                stock_zh_a_daily_df = stock_zh_a_daily_df.set_index('Date')
+                # 安全地设置日期索引，处理可能没有'日期'列的情况
+                if '日期' in stock_zh_a_daily_df.columns:
+                    stock_zh_a_daily_df['Date'] = pd.to_datetime(stock_zh_a_daily_df['日期'])
+                    stock_zh_a_daily_df = stock_zh_a_daily_df.set_index('Date')
+                elif 'date' in stock_zh_a_daily_df.columns:
+                    stock_zh_a_daily_df['Date'] = pd.to_datetime(stock_zh_a_daily_df['date'])
+                    stock_zh_a_daily_df = stock_zh_a_daily_df.set_index('Date')
+                else:
+                    # 如果没有日期列，使用默认索引作为日期
+                    logger.warning(f"获取历史数据缺少日期列，使用默认索引作为日期")
+                    dates = pd.date_range(end=end_date, periods=len(stock_zh_a_daily_df), freq='D')
+                    stock_zh_a_daily_df['Date'] = dates
+                    stock_zh_a_daily_df = stock_zh_a_daily_df.set_index('Date')
                 # 只保留需要的列
-                stock_zh_a_daily_df = stock_zh_a_daily_df[['Open', 'High', 'Low', 'Close', 'Volume']]
+                # 确保所有需要的列都存在
+                required_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
+                for col in required_columns:
+                    if col not in stock_zh_a_daily_df.columns:
+                        stock_zh_a_daily_df[col] = 0
+                stock_zh_a_daily_df = stock_zh_a_daily_df[required_columns]
             
             return stock_zh_a_daily_df
         except Exception as e:
@@ -153,13 +170,13 @@ class AkShareTool(BaseTool):
         try:
             if statement_type == "利润表":
                 # 获取利润表数据
-                financial_df = ak.stock_financial_report_sina(symbol=ticker, symbol_type="A股", report_type="利润表")
+                financial_df = ak.stock_financial_report_sina(symbol=ticker, report_type="利润表")
             elif statement_type == "资产负债表":
                 # 获取资产负债表数据
-                financial_df = ak.stock_financial_report_sina(symbol=ticker, symbol_type="A股", report_type="资产负债表")
+                financial_df = ak.stock_financial_report_sina(symbol=ticker, report_type="资产负债表")
             elif statement_type == "现金流量表":
                 # 获取现金流量表数据
-                financial_df = ak.stock_financial_report_sina(symbol=ticker, symbol_type="A股", report_type="现金流量表")
+                financial_df = ak.stock_financial_report_sina(symbol=ticker, report_type="现金流量表")
             else:
                 financial_df = pd.DataFrame()
             

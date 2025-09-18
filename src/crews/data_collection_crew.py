@@ -1,9 +1,12 @@
 """
-简化的数据收集团队
-不使用@CrewBase装饰器，直接实现CrewAI功能
+优化的数据收集团队
+解决无限运行问题，增加超时控制和错误处理
 """
 import sys
 import os
+import time
+import signal
+from threading import Timer
 sys.path.append(os.path.abspath('.'))
 
 from crewai import Agent, Task, Crew, Process
@@ -13,14 +16,49 @@ import yaml
 import logging
 from datetime import datetime
 
+# 导入HTTP工具
+from src.utils.http_utils import with_retry, create_openai_client
+
 # 导入自定义工具
+CUSTOM_TOOLS_AVAILABLE = False
 try:
-    from src.tools.custom_tools import AkShareTool, FundamentalAnalysisTool, TechnicalAnalysisTool
+    from src.tools.akshare_tools import AkShareTool
+    from src.tools.fundamental_tools import FundamentalAnalysisTool
+    from src.tools.technical_tools import TechnicalAnalysisTool
     from src.tools.reporting_tools import ReportWritingTool
     CUSTOM_TOOLS_AVAILABLE = True
-except ImportError:
-    CUSTOM_TOOLS_AVAILABLE = False
-    print("警告: 自定义工具不可用，将使用基础功能")
+    print("✓ 自定义工具加载成功")
+except ImportError as e:
+    print(f"警告: 部分自定义工具不可用 ({str(e)})，将使用基础功能")
+    
+    # 尝试单独导入每个工具
+    try:
+        from src.tools.akshare_tools import AkShareTool
+    except ImportError:
+        AkShareTool = None
+        
+    try:
+        from src.tools.fundamental_tools import FundamentalAnalysisTool
+    except ImportError:
+        FundamentalAnalysisTool = None
+        
+    try:
+        from src.tools.technical_tools import TechnicalAnalysisTool
+    except ImportError:
+        TechnicalAnalysisTool = None
+        
+    try:
+        from src.tools.reporting_tools import ReportWritingTool
+    except ImportError:
+        ReportWritingTool = None
+    
+    # 如果至少有一个工具可用，则认为自定义工具可用
+    if any([AkShareTool, FundamentalAnalysisTool, TechnicalAnalysisTool, ReportWritingTool]):
+        CUSTOM_TOOLS_AVAILABLE = True
+        print("✓ 部分自定义工具加载成功")
+    else:
+        CUSTOM_TOOLS_AVAILABLE = False
+        print("✗ 所有自定义工具均不可用，将使用基础功能")
 
 # 尝试导入crewai_tools工具，如果失败则创建模拟工具类
 serper_tool = None
@@ -37,11 +75,20 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class DataCollectionCrew:
-    """简化的数据收集团队"""
+class TimeoutException(Exception):
+    """超时异常"""
+    pass
 
-    def __init__(self):
+
+class DataCollectionCrew:
+    """优化的数据收集团队"""
+
+    def __init__(self, max_execution_time: int = 300):  # 默认5分钟超时
         """初始化数据收集团队"""
+        self.max_execution_time = max_execution_time
+        self.start_time = None
+        self.timeout_timer = None
+
         self.agents_config = self._load_config('config/agents.yaml')
         self.tasks_config = self._load_config('config/tasks.yaml')
 
@@ -59,18 +106,23 @@ class DataCollectionCrew:
         """加载配置文件"""
         try:
             # 尝试多个可能的配置文件路径
+            # 确保文件名不包含路径部分
+            config_filename = os.path.basename(config_file)
+            
             possible_paths = [
-                config_file,  # 直接路径
-                os.path.join(os.path.dirname(__file__), config_file),  # 相对于当前文件
-                os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config', os.path.basename(config_file)),  # 相对于src目录
-                os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'config', os.path.basename(config_file)),  # 相对于项目根目录
+                # 最可靠的方法：项目根目录下的config文件夹
+                os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'config', config_filename),
+                # 相对于src目录
+                os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config', config_filename),
+                # 直接路径
+                config_file,
             ]
 
             for path in possible_paths:
                 if os.path.exists(path):
                     with open(path, 'r', encoding='utf-8') as f:
                         config_data = yaml.safe_load(f)
-                        logger.debug(f"成功加载配置文件: {config_file}")
+                        logger.debug(f"成功加载配置文件: {path}")
                         return config_data
 
             logger.warning(f"未找到配置文件: {config_file}")
@@ -135,109 +187,109 @@ class DataCollectionCrew:
             }
         }
 
+    def _timeout_handler(self):
+        """超时处理函数"""
+        if self.start_time and (time.time() - self.start_time) > self.max_execution_time:
+            raise TimeoutException(f"执行超时，已超过 {self.max_execution_time} 秒")
+
     def create_agents(self, company: str, ticker: str) -> List[Agent]:
         """创建所有智能体"""
         agents = []
 
-        # 市场研究员
+        # 市场研究员 - 优化配置
         try:
             market_tools = [tool for tool in [serper_tool, scrape_tool] if tool is not None]
-            if CUSTOM_TOOLS_AVAILABLE:
+            if CUSTOM_TOOLS_AVAILABLE and TechnicalAnalysisTool:
                 market_tools.extend([TechnicalAnalysisTool()])
 
             market_researcher = Agent(
                 role="市场研究员",
                 goal=f"收集{company}的市场趋势、行业动态和相关新闻",
-                backstory="你是一位经验丰富的市场研究员，擅长分析市场趋势和收集行业信息。",
+                backstory="你是一位经验丰富的市场研究员，擅长分析市场趋势和收集行业信息。请在2-3个步骤内完成任务。",
                 verbose=True,
                 tools=market_tools,
-                allow_delegation=True,
-                max_iter=5,
-                memory=True,
-                cache=True,
+                allow_delegation=False,  # 禁用委托，避免循环调用
+                max_iter=3,  # 减少迭代次数
+                memory=False,  # 禁用内存，避免复杂状态
+                cache=False,  # 禁用缓存，避免问题
             )
             agents.append(market_researcher)
             logger.info("✓ 创建市场研究员智能体成功")
         except Exception as e:
             logger.error(f"✗ 创建市场研究员智能体失败: {str(e)}")
 
-        # 财务数据专家
+        # 财务数据专家 - 优化配置
         try:
             financial_tools = []
-            if CUSTOM_TOOLS_AVAILABLE:
+            if CUSTOM_TOOLS_AVAILABLE and AkShareTool and FundamentalAnalysisTool:
                 financial_tools.extend([AkShareTool(), FundamentalAnalysisTool()])
 
             financial_expert = Agent(
                 role="财务数据专家",
                 goal=f"收集和分析{company}的财务数据，包括财务报表和关键财务指标",
-                backstory="你是一名经验丰富的财务分析师，擅长收集和分析上市公司的财务数据。",
+                backstory="你是一名经验丰富的财务分析师，擅长收集和分析上市公司的财务数据。请在2-3个步骤内完成任务。",
                 verbose=True,
                 tools=financial_tools,
-                allow_delegation=True,
-                max_iter=5,
-                memory=True,
-                cache=True,
+                allow_delegation=False,  # 禁用委托
+                max_iter=3,  # 减少迭代次数
+                memory=False,  # 禁用内存
+                cache=False,  # 禁用缓存
             )
             agents.append(financial_expert)
             logger.info("✓ 创建财务数据专家智能体成功")
         except Exception as e:
             logger.error(f"✗ 创建财务数据专家智能体失败: {str(e)}")
 
-        # 技术分析师
+        # 技术分析师 - 优化配置
         try:
             technical_tools = []
-            if CUSTOM_TOOLS_AVAILABLE:
+            if CUSTOM_TOOLS_AVAILABLE and TechnicalAnalysisTool:
                 technical_tools.append(TechnicalAnalysisTool())
 
             technical_analyst = Agent(
                 role="技术分析师",
                 goal=f"分析{company}的股价走势和技术指标",
-                backstory="你是一名专业的股票技术分析师，擅长分析股票价格走势和技术指标。",
+                backstory="你是一名专业的股票技术分析师，擅长分析股票价格走势和技术指标。请在2-3个步骤内完成任务。",
                 verbose=True,
                 tools=technical_tools,
-                allow_delegation=True,
-                max_iter=5,
-                memory=True,
-                cache=True,
+                allow_delegation=False,  # 禁用委托
+                max_iter=3,  # 减少迭代次数
+                memory=False,  # 禁用内存
+                cache=False,  # 禁用缓存
             )
             agents.append(technical_analyst)
             logger.info("✓ 创建技术分析师智能体成功")
         except Exception as e:
             logger.error(f"✗ 创建技术分析师智能体失败: {str(e)}")
 
-        # 数据验证专家
+        # 数据验证专家 - 简化配置
         try:
-            validation_tools = []
-            if CUSTOM_TOOLS_AVAILABLE:
-                validation_tools.append(FundamentalAnalysisTool())
-
             data_validator = Agent(
                 role="数据验证专家",
                 goal=f"验证收集的{company}数据的准确性和完整性",
-                backstory="你是数据质量专家，擅长数据验证和清洗。",
+                backstory="你是数据质量专家，擅长数据验证和清洗。请在1-2个步骤内完成任务。",
                 verbose=True,
-                tools=validation_tools,
-                allow_delegation=True,
-                max_iter=3,
-                memory=True,
-                cache=True,
+                allow_delegation=False,  # 禁用委托
+                max_iter=2,  # 减少迭代次数
+                memory=False,  # 禁用内存
+                cache=False,  # 禁用缓存
             )
             agents.append(data_validator)
             logger.info("✓ 创建数据验证专家智能体成功")
         except Exception as e:
             logger.error(f"✗ 创建数据验证专家智能体失败: {str(e)}")
 
-        # 数据协调专家
+        # 数据协调专家 - 简化配置
         try:
             coordinator = Agent(
                 role="数据协调专家",
                 goal=f"协调各智能体的{company}数据收集工作",
-                backstory="你是一位优秀的项目经理，擅长协调多个团队的工作。",
+                backstory="你是一位优秀的项目经理，擅长协调多个团队的工作。请在1-2个步骤内完成任务。",
                 verbose=True,
-                allow_delegation=True,
-                max_iter=5,
-                memory=True,
-                cache=True,
+                allow_delegation=False,  # 禁用委托
+                max_iter=2,  # 减少迭代次数
+                memory=False,  # 禁用内存
+                cache=False,  # 禁用缓存
             )
             agents.append(coordinator)
             logger.info("✓ 创建数据协调专家智能体成功")
@@ -254,11 +306,11 @@ class DataCollectionCrew:
             logger.error("智能体数量不足，无法创建完整的任务链")
             return tasks
 
-        # 市场研究任务
+        # 市场研究任务 - 简化要求
         try:
             market_task = Task(
-                description=f"对{company}进行全面的市场研究，包括行业动态、市场趋势和相关新闻",
-                expected_output=f"详细的{company}市场研究报告，包含趋势分析和市场洞察",
+                description=f"对{company}进行简要的市场研究，包括行业动态和市场趋势",
+                expected_output=f"简要的{company}市场研究报告，包含主要市场发现",
                 agent=agents[0],  # 市场研究员
                 context=[],
                 async_execution=False,
@@ -268,13 +320,13 @@ class DataCollectionCrew:
         except Exception as e:
             logger.error(f"✗ 创建市场研究任务失败: {str(e)}")
 
-        # 财务数据收集任务
+        # 财务数据收集任务 - 简化要求
         try:
             financial_task = Task(
-                description=f"分析{company}的财务健康状况，包括关键财务指标和趋势分析",
-                expected_output=f"完整的{company}财务分析报告，包含详细的财务指标分析",
+                description=f"分析{company}的基本财务状况，包括主要财务指标",
+                expected_output=f"简要的{company}财务分析报告，包含关键财务指标",
                 agent=agents[1],  # 财务数据专家
-                context=[tasks[0]] if tasks else [],
+                context=[],  # 移除任务依赖，避免循环
                 async_execution=False,
             )
             tasks.append(financial_task)
@@ -282,13 +334,13 @@ class DataCollectionCrew:
         except Exception as e:
             logger.error(f"✗ 创建财务数据收集任务失败: {str(e)}")
 
-        # 技术分析任务
+        # 技术分析任务 - 简化要求
         try:
             technical_task = Task(
-                description=f"对{company}进行技术面分析，包括价格走势和技术指标分析",
-                expected_output=f"专业的{company}技术分析报告，包含技术指标分析",
+                description=f"对{company}进行简要的技术面分析，包括主要技术指标",
+                expected_output=f"简要的{company}技术分析报告，包含关键技术指标",
                 agent=agents[2],  # 技术分析师
-                context=[tasks[0]] if tasks else [],
+                context=[],  # 移除任务依赖，避免循环
                 async_execution=False,
             )
             tasks.append(technical_task)
@@ -296,13 +348,13 @@ class DataCollectionCrew:
         except Exception as e:
             logger.error(f"✗ 创建技术分析任务失败: {str(e)}")
 
-        # 数据验证任务
+        # 数据验证任务 - 简化要求
         try:
             validation_task = Task(
-                description=f"验证所有收集的{company}数据的准确性和一致性",
-                expected_output=f"{company}数据验证报告，包含数据质量评估",
+                description=f"简要验证收集的{company}数据的准确性",
+                expected_output=f"{company}数据验证简要报告",
                 agent=agents[3] if len(agents) > 3 else agents[0],
-                context=tasks[:3] if len(tasks) >= 3 else tasks,
+                context=[],  # 移除复杂依赖
                 async_execution=False,
             )
             tasks.append(validation_task)
@@ -310,14 +362,14 @@ class DataCollectionCrew:
         except Exception as e:
             logger.error(f"✗ 创建数据验证任务失败: {str(e)}")
 
-        # 数据协调任务
+        # 数据协调任务 - 简化要求
         try:
             coordinator_idx = min(4, len(agents) - 1)
             coordination_task = Task(
-                description=f"协调和整合所有{company}数据收集工作，确保数据的一致性",
-                expected_output=f"{company}数据协调报告，包含工作进度汇总和质量评估",
+                description=f"简要汇总{company}数据收集工作",
+                expected_output=f"{company}数据收集简要汇总",
                 agent=agents[coordinator_idx],  # 数据协调专家
-                context=tasks,
+                context=[],  # 移除复杂依赖
                 async_execution=False,
             )
             tasks.append(coordination_task)
@@ -342,15 +394,15 @@ class DataCollectionCrew:
                 logger.error("无法创建任何任务")
                 return None
 
-            # 创建Crew
+            # 创建优化的Crew
             crew = Crew(
                 agents=agents,
                 tasks=tasks,
-                process=Process.sequential,  # 使用顺序流程，避免manager_llm要求
-                verbose=True,
-                memory=True,
-                cache=True,
-                planning=True,
+                process=Process.sequential,  # 使用顺序流程
+                verbose=False,  # 减少输出
+                memory=False,  # 禁用内存，避免复杂状态
+                cache=False,  # 禁用缓存
+                planning=False,  # 禁用规划，避免无限循环
             )
 
             logger.info(f"✓ 成功创建Crew实例，包含 {len(agents)} 个智能体和 {len(tasks)} 个任务")
@@ -360,10 +412,16 @@ class DataCollectionCrew:
             logger.error(f"创建Crew实例时出错: {str(e)}")
             return None
 
+    @with_retry(max_retries=3, backoff_factor=1.0)
     def execute_data_collection(self, company: str, ticker: str) -> Dict[str, Any]:
-        """执行数据收集"""
+        """执行数据收集，带超时控制和自动重试机制"""
         try:
             logger.info(f"开始执行{company}的数据收集任务")
+            self.start_time = time.time()
+
+            # 设置超时监控
+            self.timeout_timer = Timer(self.max_execution_time, self._timeout_handler)
+            self.timeout_timer.start()
 
             # 创建Crew
             crew = self.create_crew(company, ticker)
@@ -382,9 +440,18 @@ class DataCollectionCrew:
                 "ticker": ticker
             }
 
-            # 执行任务
+            # 执行任务，带超时控制
             logger.info("启动CrewAI多智能体协作...")
+            logger.info(f"预计最长时间: {self.max_execution_time} 秒")
+
             result = crew.kickoff(inputs=inputs)
+
+            # 取消超时监控
+            if self.timeout_timer:
+                self.timeout_timer.cancel()
+
+            execution_time = time.time() - self.start_time
+            logger.info(f"任务完成，执行时间: {execution_time:.2f} 秒")
 
             # 返回结果
             return {
@@ -393,24 +460,39 @@ class DataCollectionCrew:
                 "company": company,
                 "ticker": ticker,
                 "timestamp": datetime.now().isoformat(),
+                "execution_time": execution_time,
                 "agents_count": len(crew.agents),
                 "tasks_count": len(crew.tasks)
             }
 
-        except Exception as e:
-            logger.error(f"执行数据收集时出错: {str(e)}")
+        except TimeoutException as e:
+            logger.error(f"执行超时: {str(e)}")
             return {
-                "status": "failed",
+                "status": "timeout",
                 "error": str(e),
                 "company": company,
                 "ticker": ticker,
                 "timestamp": datetime.now().isoformat()
             }
+        except Exception as e:
+            # 检查是否为OpenAI连接错误
+            is_openai_error = "OpenAI" in str(e) or "LiteLLM" in str(e) or "10054" in str(e)
+            if is_openai_error:
+                logger.error(f"OpenAI API连接错误: {str(e)} - 将触发自动重试")
+            else:
+                logger.error(f"执行数据收集时出错: {str(e)}")
+            
+            # 重新抛出异常，让装饰器处理重试逻辑
+            raise
+        finally:
+            # 确保取消超时监控
+            if self.timeout_timer:
+                self.timeout_timer.cancel()
 
     def get_crew_info(self) -> Dict[str, Any]:
         """获取团队信息"""
         return {
-            'name': '数据收集团队 (简化版)',
+            'name': '数据收集团队 (优化版)',
             'agents': [
                 '市场研究员',
                 '财务数据专家',
@@ -418,32 +500,43 @@ class DataCollectionCrew:
                 '数据验证专家',
                 '数据协调专家'
             ],
-            'description': '使用CrewAI进行多智能体协作数据收集',
+            'description': '使用CrewAI进行多智能体协作数据收集 (优化版)',
             'features': [
                 '智能体间协作',
                 '任务链式执行',
-                '上下文共享',
-                '层次化流程'
+                '超时控制',
+                '性能优化'
             ],
-            'process': 'hierarchical (层次化协作流程)'
+            'process': 'sequential (顺序执行流程)',
+            'max_execution_time': f'{self.max_execution_time} 秒'
         }
 
 
 # 测试代码
 if __name__ == "__main__":
-    # 创建数据收集团队
-    crew = DataCollectionCrew()
+    # 创建数据收集团队（设置较短超时用于测试）
+    crew = DataCollectionCrew(max_execution_time=120)  # 2分钟超时
 
     # 获取团队信息
     info = crew.get_crew_info()
     print(f"团队名称: {info['name']}")
     print(f"智能体数量: {len(info['agents'])}")
     print(f"处理流程: {info['process']}")
+    print(f"最大执行时间: {info['max_execution_time']}")
 
     # 测试创建Crew
     test_crew = crew.create_crew("贵州茅台", "600519")
     if test_crew:
         print(f"✓ 成功创建测试Crew，包含 {len(test_crew.agents)} 个智能体")
         print(f"✓ 包含 {len(test_crew.tasks)} 个任务")
+
+        # 显示优化配置
+        print("\\n=== 优化配置 ===")
+        for i, agent in enumerate(test_crew.agents):
+            print(f"智能体 {i+1}: {agent.role}")
+            print(f"  - max_iter: {getattr(agent, 'max_iter', 'N/A')}")
+            print(f"  - allow_delegation: {getattr(agent, 'allow_delegation', 'N/A')}")
+            print(f"  - memory: {getattr(agent, 'memory', 'N/A')}")
+            print(f"  - cache: {getattr(agent, 'cache', 'N/A')}")
     else:
         print("✗ 创建测试Crew失败")

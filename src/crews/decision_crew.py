@@ -11,6 +11,7 @@ import json
 from datetime import datetime
 import os
 from src.tools.reporting_tools import ReportWritingTool, DataExportTool
+from src.utils.http_utils import with_retry
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -29,12 +30,27 @@ class DecisionCrew:
     def _load_config(self, config_file: str) -> Dict[str, Any]:
         """加载配置文件"""
         try:
-            # 获取项目根目录
-            current_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-            config_path = os.path.join(current_dir, config_file)
+            # 确保文件名不包含路径部分
+            config_filename = os.path.basename(config_file)
+            
+            possible_paths = [
+                # 最可靠的方法：项目根目录下的config文件夹
+                os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'config', config_filename),
+                # 相对于src目录
+                os.path.join(os.path.dirname(os.path.dirname(__file__)), 'config', config_filename),
+                # 直接路径
+                config_file,
+            ]
 
-            with open(config_path, 'r', encoding='utf-8') as f:
-                return yaml.safe_load(f)
+            for path in possible_paths:
+                if os.path.exists(path):
+                    with open(path, 'r', encoding='utf-8') as f:
+                        config_data = yaml.safe_load(f)
+                        logger.debug(f"成功加载配置文件: {path}")
+                        return config_data
+
+            logger.warning(f"未找到配置文件: {config_file}")
+            return {}
         except Exception as e:
             logger.error(f"加载配置文件失败: {config_file}, 错误: {str(e)}")
             return {}
@@ -382,9 +398,10 @@ class DecisionCrew:
             share_crew=True,  # 允许智能体间共享信息
         )
 
+    @with_retry(max_retries=3, backoff_factor=1.0)
     def execute_collective_decision(self, company: str, ticker: str,
                                  analysis_data: Dict[str, Any] = None) -> Dict[str, Any]:
-        """执行真正的集体决策过程"""
+        """执行集体决策过程，带自动重试机制"""
         try:
             logger.info(f"启动集体投资决策: {company} ({ticker})")
 
@@ -424,6 +441,9 @@ class DecisionCrew:
         except Exception as e:
             error_msg = f"集体决策失败: {str(e)}"
             logger.error(error_msg)
+            # 检查是否是OpenAI相关错误，是的话重新抛出异常以触发重试
+            if 'OpenAI' in str(e) or 'LiteLLM' in str(e) or '10054' in str(e):
+                raise
             return {
                 'success': False,
                 'error': error_msg,
@@ -652,6 +672,21 @@ class DecisionCrew:
             logger.error(f"计算决策指标时出错: {str(e)}")
 
         return metrics
+
+    def execute_decision_process(self, company: str, ticker: str, analysis_data: Dict[str, Any] = None) -> Dict[str, Any]:
+        """执行决策过程 - 兼容性方法，内部调用 execute_collective_decision"""
+        try:
+            logger.info(f"执行决策过程: {company} ({ticker})")
+            return self.execute_collective_decision(company, ticker, analysis_data)
+        except Exception as e:
+            logger.error(f"执行决策过程时出错: {str(e)}")
+            return {
+                "status": "failed",
+                "error": str(e),
+                "company": company,
+                "ticker": ticker,
+                "timestamp": datetime.now().isoformat()
+            }
 
     def get_crew_info(self) -> Dict[str, Any]:
         """获取团队信息"""
