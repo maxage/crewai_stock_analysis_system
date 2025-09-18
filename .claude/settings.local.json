@@ -5,7 +5,8 @@
       "Bash(tree:*)",
       "Bash(python -m pytest:*)",
       "Bash(pip install:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(copy:*)"
     ],
     "deny": [],
     "ask": []

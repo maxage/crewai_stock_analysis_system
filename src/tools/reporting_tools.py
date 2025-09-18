@@ -3,13 +3,14 @@
 用于生成各种分析报告和文档
 """
 from crewai import Agent, Task
+from crewai.tools import BaseTool as CrewAIBaseTool
 from typing import Dict, Any, List, Optional
 import json
 from datetime import datetime
 import logging
 
-# 自定义工具基类
-class BaseTool:
+# 创建自定义的工具基类，继承自crewai_tools的BaseTool
+class BaseTool(CrewAIBaseTool):
     """工具基类"""
     name: str = "Base Tool"
     description: str = "基础工具类"

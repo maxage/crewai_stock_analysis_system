@@ -758,8 +758,12 @@ def create_templates():
 
 
 if __name__ == '__main__':
-    # 创建模板
-    create_templates()
+    # 只在模板不存在时创建模板，避免覆盖现有的自定义模板
+    if not os.path.exists('templates/index.html'):
+        logger.info("模板文件不存在，创建新模板...")
+        create_templates()
+    else:
+        logger.info("模板文件已存在，使用现有模板")
 
     # 启动Web应用
     print("启动Web应用...")

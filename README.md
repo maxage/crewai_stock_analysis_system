@@ -537,6 +537,7 @@ python main.py info
 ```bash
 # 基本用法
 python main.py single --company "贵州茅台" --ticker "600519"
+python main.py single --company "紫光股份" --ticker "000938"
 
 # 不使用缓存
 python main.py single --company "贵州茅台" --ticker "600519" --no-cache

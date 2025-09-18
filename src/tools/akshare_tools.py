@@ -1,7 +1,5 @@
-"""
-使用akshare获取股票数据的工具类
-"""
-from crewai import Agent, Task
+"""使用akshare获取股票数据的工具类"""
+from crewai import Agent, Task, tools
 from typing import Dict, Any, List, Optional
 import akshare as ak
 import pandas as pd
@@ -10,15 +8,8 @@ from datetime import datetime, timedelta
 import logging
 import time
 
-# 自定义工具基类
-class BaseTool:
-    """工具基类"""
-    name: str = "Base Tool"
-    description: str = "基础工具类"
-    
-    def _run(self, *args, **kwargs):
-        """运行工具"""
-        raise NotImplementedError("子类必须实现_run方法")
+# 使用项目自定义的BaseTool类
+from src.tools.reporting_tools import BaseTool
 
 # 设置日志配置为DEBUG级别，确保所有调试信息都能被记录
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

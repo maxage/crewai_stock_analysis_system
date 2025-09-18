@@ -1,22 +1,13 @@
-"""
-基本面分析工具
-包含公司基本面评估、价值分析等功能
-"""
+"""基本面分析工具
+包含公司基本面评估、价值分析等功能"""
 from crewai import Agent, Task
 from typing import Dict, Any, List, Optional
 import json
 from datetime import datetime
 import logging
 
-# 自定义工具基类
-class BaseTool:
-    """工具基类"""
-    name: str = "Base Tool"
-    description: str = "基础工具类"
-    
-    def _run(self, *args, **kwargs):
-        """运行工具"""
-        raise NotImplementedError("子类必须实现_run方法")
+# 从reporting_tools导入项目统一的BaseTool类
+from src.tools.reporting_tools import BaseTool
 
 # 设置日志配置为DEBUG级别
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

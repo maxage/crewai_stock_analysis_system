@@ -1,4 +1,3 @@
-# CrewAI 核心依赖
 crewai>=0.28.0
 crewai-tools>=0.4.0
 

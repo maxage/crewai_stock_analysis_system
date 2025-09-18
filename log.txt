@@ -1,0 +1,1111 @@
+(base) PS E:\sss\crewai> python src/web_app.py
+2025-09-18 16:50:31,769 - matplotlib - DEBUG - matplotlib data path: C:\Users\49707\miniconda3\Lib\site-packages\matplotlib\mpl-data
+2025-09-18 16:50:31,790 - matplotlib - DEBUG - CONFIGDIR=C:\Users\49707\.matplotlib
+2025-09-18 16:50:31,795 - matplotlib - DEBUG - interactive is False
+2025-09-18 16:50:31,796 - matplotlib - DEBUG - platform is win32
+2025-09-18 16:50:32,000 - matplotlib - DEBUG - CACHEDIR=C:\Users\49707\.matplotlib
+2025-09-18 16:50:32,011 - matplotlib.font_manager - DEBUG - Using fontManager instance from C:\Users\49707\.matplotlib\fontlist-v390.json
+2025-09-18 16:50:35,484 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/agents.yaml
+2025-09-18 16:50:35,534 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/agents.yaml
+2025-09-18 16:50:35,534 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_researcher', 'financial_data_expert', 'technical_analyst', 'data_validation_expert', 'fundamental_analyst', 'risk_assessment_specialist', 'industry_expert', 'investment_strategy_advisor', 'report_generator', 'quality_control_specialist', 'data_validator', 'market_sentiment_analyst', 'data_collection_coordinator', 'task_allocation_coordinator', 'decision_committee_chairman', 'collaboration_optimizer']
+2025-09-18 16:50:35,535 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/tasks.yaml
+2025-09-18 16:50:35,581 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/tasks.yaml
+2025-09-18 16:50:35,581 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_research_task', 'financial_data_collection_task', 'technical_analysis_task', 'fundamental_analysis_task', 'risk_assessment_task', 'industry_analysis_task', 'investment_recommendation_task', 'report_generation_task', 'quality_control_task', 'data_validation_task', 'sentiment_analysis_task', 'dynamic_task_allocation_task', 'collective_decision_task', 'collaboration_optimization_task', 'collaboration_coordination_task']
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:50:35,596 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:50:35,608 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:50:35,609 - src.crews.data_collection_crew - DEBUG - agents_config内容: 空
+2025-09-18 16:50:35,610 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到market_researcher键
+2025-09-18 16:50:35,617 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:50:35,619 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F99767050>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F99767080>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,620 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F999FBB60>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F998C89B0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,625 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:50:35,626 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F999FBB60>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,628 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F998C89B0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,632 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_validation_expert键
+2025-09-18 16:50:35,638 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_coordination_agent键
+2025-09-18 16:50:35,642 - src.crews.data_collection_crew - DEBUG - tasks_config内容: 空
+2025-09-18 16:50:35,642 - src.crews.data_collection_crew - ERROR - tasks_config为空，请检查配置文件加载是否成功
+2025-09-18 16:50:35,644 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:50:35,644 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AEBC9E0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDD370>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,646 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDD640>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDD340>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,646 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:50:35,647 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AEBC9E0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,648 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDD490>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,649 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_validation_task键
+2025-09-18 16:50:35,649 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_coordination_task键
+2025-09-18 16:50:35,650 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:50:35,651 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDD490>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDD4C0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,653 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDD3D0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDD520>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,658 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:50:35,660 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDD3D0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,662 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDDAF0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,666 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:50:35,667 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F99EA4B30>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDDAF0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,667 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDE2A0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDDF10>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,669 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:50:35,669 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F99EA4B30>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,670 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDDF10>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:50:35,749 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:50:35,751 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:50:35,839 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:50:35,851 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:50:35,853 - src.stock_analysis_system - INFO - 股票分析系统初始化完成
+2025-09-18 16:50:35,854 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/agents.yaml
+2025-09-18 16:50:35,903 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/agents.yaml
+2025-09-18 16:50:35,906 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_researcher', 'financial_data_expert', 'technical_analyst', 'data_validation_expert', 'fundamental_analyst', 'risk_assessment_specialist', 'industry_expert', 'investment_strategy_advisor', 'report_generator', 'quality_control_specialist', 'data_validator', 'market_sentiment_analyst', 'data_collection_coordinator', 'task_allocation_coordinator', 'decision_committee_chairman', 'collaboration_optimizer']
+2025-09-18 16:50:35,908 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/tasks.yaml
+2025-09-18 16:50:35,934 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/tasks.yaml
+2025-09-18 16:50:35,935 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_research_task', 'financial_data_collection_task', 'technical_analysis_task', 'fundamental_analysis_task', 'risk_assessment_task', 'industry_analysis_task', 'investment_recommendation_task', 'report_generation_task', 'quality_control_task', 'data_validation_task', 'sentiment_analysis_task', 'dynamic_task_allocation_task', 'collective_decision_task', 'collaboration_optimization_task', 'collaboration_coordination_task']
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:50:35,958 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:50:35,959 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:50:35,960 - src.crews.data_collection_crew - DEBUG - agents_config内容: 空
+2025-09-18 16:50:35,960 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到market_researcher键
+2025-09-18 16:50:35,966 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:50:35,967 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F99EC9EB0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F99EC9EE0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,968 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AEBC980>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AEBD0D0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,973 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:50:35,975 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AEBC980>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,976 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AEBD0D0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,981 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_validation_expert键
+2025-09-18 16:50:35,986 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_coordination_agent键
+2025-09-18 16:50:35,991 - src.crews.data_collection_crew - DEBUG - tasks_config内容: 空
+2025-09-18 16:50:35,991 - src.crews.data_collection_crew - ERROR - tasks_config为空，请检查配置文件加载是否成功
+2025-09-18 16:50:35,993 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:50:35,993 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDE3C0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDEB10>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,994 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDEF00>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDE300>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,994 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:50:35,996 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDEF00>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,997 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDE5D0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:35,997 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_validation_task键
+2025-09-18 16:50:35,998 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_coordination_task键
+2025-09-18 16:50:36,000 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:50:36,001 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDE5D0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDF380>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,002 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDFCB0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDEC30>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,006 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:50:36,008 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDFCB0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,008 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDDF40>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,013 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:50:36,014 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDDF40>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDFCB0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,015 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDE180>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDC410>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,016 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:50:36,017 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDE180>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,017 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDF7D0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:50:36,088 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:50:36,089 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:50:36,179 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:50:36,193 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:50:36,197 - src.stock_analysis_system - INFO - 股票分析系统初始化完成
+2025-09-18 16:50:36,197 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/agents.yaml
+2025-09-18 16:50:36,234 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/agents.yaml
+2025-09-18 16:50:36,234 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_researcher', 'financial_data_expert', 'technical_analyst', 'data_validation_expert', 'fundamental_analyst', 'risk_assessment_specialist', 'industry_expert', 'investment_strategy_advisor', 'report_generator', 'quality_control_specialist', 'data_validator', 'market_sentiment_analyst', 'data_collection_coordinator', 'task_allocation_coordinator', 'decision_committee_chairman', 'collaboration_optimizer']
+2025-09-18 16:50:36,237 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/tasks.yaml
+2025-09-18 16:50:36,263 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/tasks.yaml
+2025-09-18 16:50:36,264 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_research_task', 'financial_data_collection_task', 'technical_analysis_task', 'fundamental_analysis_task', 'risk_assessment_task', 'industry_analysis_task', 'investment_recommendation_task', 'report_generation_task', 'quality_control_task', 'data_validation_task', 'sentiment_analysis_task', 'dynamic_task_allocation_task', 'collective_decision_task', 'collaboration_optimization_task', 'collaboration_coordination_task']
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:50:36,274 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:50:36,276 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:50:36,278 - src.crews.data_collection_crew - DEBUG - agents_config内容: 空
+2025-09-18 16:50:36,278 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到market_researcher键
+2025-09-18 16:50:36,283 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:50:36,284 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDE810>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDE360>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,285 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDFCB0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDDA90>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,289 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:50:36,289 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDFCB0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,291 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDD7C0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,297 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_validation_expert键
+2025-09-18 16:50:36,302 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_coordination_agent键
+2025-09-18 16:50:36,309 - src.crews.data_collection_crew - DEBUG - tasks_config内容: 空
+2025-09-18 16:50:36,312 - src.crews.data_collection_crew - ERROR - tasks_config为空，请检查配置文件加载是否成功
+2025-09-18 16:50:36,314 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:50:36,316 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDF2F0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDCB60>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,317 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDED80>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDD5E0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,318 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:50:36,319 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDED80>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,319 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDDAF0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,320 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_validation_task键
+2025-09-18 16:50:36,321 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_coordination_task键
+2025-09-18 16:50:36,323 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:50:36,325 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDED80>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDF2F0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,328 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9AFDE2A0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9AFDEF90>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,334 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:50:36,335 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F99E68050>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,335 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F99DDBF20>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,341 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:50:36,342 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F99DDBF20>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F99E68050>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,343 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F9B04C620>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000010F9B04C5F0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,343 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:50:36,344 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F99DDBF20>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:50:36,345 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000010F99E68050>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:50:36,429 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:50:36,432 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:50:36,505 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:50:36,506 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:50:36,508 - src.stock_analysis_system - INFO - 股票分析系统初始化完成
+2025-09-18 16:50:36,535 - __main__ - INFO - 模板文件已存在，使用现有模板
+启动Web应用...
+
+
+
+
+
+
+
+
+
+
+
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C0AEA0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,432 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:51:50,433 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE33F8DD0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,435 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C0AEA0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:51:50,497 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:51:50,510 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:51:50,575 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:51:50,586 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:51:50,587 - src.stock_analysis_system - INFO - 股票分析系统初始化完成
+2025-09-18 16:51:50,588 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/agents.yaml
+2025-09-18 16:51:50,633 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/agents.yaml
+2025-09-18 16:51:50,633 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_researcher', 'financial_data_expert', 'technical_analyst', 'data_validation_expert', 'fundamental_analyst', 'risk_assessment_specialist', 'industry_expert', 'investment_strategy_advisor', 'report_generator', 'quality_control_specialist', 'data_validator', 'market_sentiment_analyst', 'data_collection_coordinator', 'task_allocation_coordinator', 'decision_committee_chairman', 'collaboration_optimizer']
+2025-09-18 16:51:50,639 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/tasks.yaml
+2025-09-18 16:51:50,679 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/tasks.yaml
+2025-09-18 16:51:50,680 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_research_task', 'financial_data_collection_task', 'technical_analysis_task', 'fundamental_analysis_task', 'risk_assessment_task', 'industry_analysis_task', 'investment_recommendation_task', 'report_generation_task', 'quality_control_task', 'data_validation_task', 'sentiment_analysis_task', 'dynamic_task_allocation_task', 'collective_decision_task', 'collaboration_optimization_task', 'collaboration_coordination_task']
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:51:50,693 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:51:50,697 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:51:50,698 - src.crews.data_collection_crew - DEBUG - agents_config内容: 空
+2025-09-18 16:51:50,699 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到market_researcher键
+2025-09-18 16:51:50,703 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:51:50,704 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C0BDD0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C0A780>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,705 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C0AC00>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C09EB0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,712 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:51:50,712 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C0AC00>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,712 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C0B4D0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,718 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_validation_expert键
+2025-09-18 16:51:50,723 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_coordination_agent键
+2025-09-18 16:51:50,728 - src.crews.data_collection_crew - DEBUG - tasks_config内容: 空
+2025-09-18 16:51:50,728 - src.crews.data_collection_crew - ERROR - tasks_config为空，请检查配置文件加载是否成功
+2025-09-18 16:51:50,730 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:51:50,731 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C0A4B0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C0AC60>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,732 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE35152E0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE3903E00>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,732 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:51:50,733 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE35152E0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,734 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE3903E00>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,735 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_validation_task键
+2025-09-18 16:51:50,736 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_coordination_task键
+2025-09-18 16:51:50,737 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:51:50,738 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C0A4B0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C8C080>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,741 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8C1D0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C8C170>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,746 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:51:50,747 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C0A4B0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,749 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8C2C0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,753 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:51:50,756 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C0A4B0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE3A70D10>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,757 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8CBF0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C8C9E0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,757 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:51:50,758 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C0A4B0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:50,759 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE3A70D10>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:51:50,826 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:51:50,828 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:51:50,903 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:51:50,928 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:51:50,930 - src.stock_analysis_system - INFO - 股票分析系统初始化完成
+2025-09-18 16:51:50,931 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/agents.yaml
+2025-09-18 16:51:51,005 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/agents.yaml
+2025-09-18 16:51:51,005 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_researcher', 'financial_data_expert', 'technical_analyst', 'data_validation_expert', 'fundamental_analyst', 'risk_assessment_specialist', 'industry_expert', 'investment_strategy_advisor', 'report_generator', 'quality_control_specialist', 'data_validator', 'market_sentiment_analyst', 'data_collection_coordinator', 'task_allocation_coordinator', 'decision_committee_chairman', 'collaboration_optimizer']
+2025-09-18 16:51:51,017 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/tasks.yaml
+2025-09-18 16:51:51,053 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/tasks.yaml
+2025-09-18 16:51:51,053 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_research_task', 'financial_data_collection_task', 'technical_analysis_task', 'fundamental_analysis_task', 'risk_assessment_task', 'industry_analysis_task', 'investment_recommendation_task', 'report_generation_task', 'quality_control_task', 'data_validation_task', 'sentiment_analysis_task', 'dynamic_task_allocation_task', 'collective_decision_task', 'collaboration_optimization_task', 'collaboration_coordination_task']
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:51:51,064 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:51:51,066 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:51:51,067 - src.crews.data_collection_crew - DEBUG - agents_config内容: 空
+2025-09-18 16:51:51,067 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到market_researcher键
+2025-09-18 16:51:51,072 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:51:51,073 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4AE15E0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4AE0D10>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,074 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C0B800>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C0AA20>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,082 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:51:51,084 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4AE15E0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,085 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C09EB0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,089 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_validation_expert键
+2025-09-18 16:51:51,094 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_coordination_agent键
+2025-09-18 16:51:51,100 - src.crews.data_collection_crew - DEBUG - tasks_config内容: 空
+2025-09-18 16:51:51,101 - src.crews.data_collection_crew - ERROR - tasks_config为空，请检查配置文件加载是否成功
+2025-09-18 16:51:51,102 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:51:51,103 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8F6E0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C8E4B0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,104 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8FB00>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C8EE10>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,105 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:51:51,106 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8FB00>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,107 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8C8F0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,107 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_validation_task键
+2025-09-18 16:51:51,108 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_coordination_task键
+2025-09-18 16:51:51,109 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:51:51,110 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8FB00>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C8F6E0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,111 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8D700>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C8F860>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,118 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:51:51,119 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8D700>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,119 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8FE00>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,124 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:51:51,125 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8FE00>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C8D700>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,125 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8D070>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x0000016CE4C8C2C0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,126 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:51:51,129 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8D070>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:51:51,131 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x0000016CE4C8FD40>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:51:51,196 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:51:51,208 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:51:51,263 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:51:51,265 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:51:51,266 - src.stock_analysis_system - INFO - 股票分析系统初始化完成
+2025-09-18 16:51:51,283 - __main__ - INFO - 模板文件已存在，使用现有模板
+启动Web应用...
+访问地址: http://localhost:5000
+2025-09-18 16:51:51,347 - werkzeug - WARNING -  * Debugger is active!
+2025-09-18 16:51:51,441 - werkzeug - INFO -  * Debugger PIN: 836-506-828
+2025-09-18 16:51:51,685 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:51:51] "GET /monitor/status HTTP/1.1" 200 -
+2025-09-18 16:51:51,707 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:51:51] "GET /monitor/status HTTP/1.1" 200 -
+2025-09-18 16:51:52,106 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\__init__.py', reloading
+2025-09-18 16:51:52,132 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\__init__.py', reloading
+2025-09-18 16:51:52,134 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\__init__.py', reloading
+2025-09-18 16:51:52,144 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\__init__.py', reloading
+2025-09-18 16:51:52,161 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\asn1.py', reloading
+2025-09-18 16:51:52,174 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\asn1.py', reloading
+2025-09-18 16:51:52,189 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\asn1.py', reloading
+2025-09-18 16:51:52,191 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\asn1.py', reloading
+2025-09-18 16:51:52,201 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\cli.py', reloading
+2025-09-18 16:51:52,216 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\cli.py', reloading
+2025-09-18 16:51:52,233 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\cli.py', reloading
+2025-09-18 16:51:52,235 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\cli.py', reloading
+2025-09-18 16:51:52,257 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\common.py', reloading
+2025-09-18 16:51:52,298 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\common.py', reloading
+2025-09-18 16:51:52,301 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\common.py', reloading
+2025-09-18 16:51:52,302 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\common.py', reloading
+2025-09-18 16:51:52,312 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\core.py', reloading
+2025-09-18 16:51:52,358 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\core.py', reloading
+2025-09-18 16:51:52,369 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\core.py', reloading
+2025-09-18 16:51:52,372 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\core.py', reloading
+2025-09-18 16:51:52,398 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\key.py', reloading
+2025-09-18 16:51:52,409 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\key.py', reloading
+2025-09-18 16:51:52,442 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\key.py', reloading
+2025-09-18 16:51:52,451 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\key.py', reloading
+2025-09-18 16:51:52,477 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\parallel.py', reloading
+2025-09-18 16:51:52,506 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\parallel.py', reloading
+2025-09-18 16:51:52,509 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\parallel.py', reloading
+2025-09-18 16:51:52,510 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\parallel.py', reloading
+2025-09-18 16:51:52,520 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pem.py', reloading
+2025-09-18 16:51:52,537 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pem.py', reloading
+2025-09-18 16:51:52,552 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pem.py', reloading
+2025-09-18 16:51:52,564 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pem.py', reloading
+2025-09-18 16:51:52,603 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pkcs1.py', reloading
+2025-09-18 16:51:52,641 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pkcs1.py', reloading
+2025-09-18 16:51:52,656 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pkcs1.py', reloading
+2025-09-18 16:51:52,679 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pkcs1.py', reloading
+2025-09-18 16:51:52,680 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pkcs1_v2.py', reloading
+2025-09-18 16:51:52,705 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pkcs1_v2.py', reloading
+2025-09-18 16:51:52,718 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pkcs1_v2.py', reloading
+2025-09-18 16:51:52,720 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\pkcs1_v2.py', reloading
+2025-09-18 16:51:52,790 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\prime.py', reloading
+2025-09-18 16:51:52,791 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\prime.py', reloading
+2025-09-18 16:51:52,817 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\prime.py', reloading
+2025-09-18 16:51:52,819 - werkzeug - INFO -  * Detected change in 'E:\\sss\\crewai\\venv\\Lib\\site-packages\\rsa\\prime.py', reloading
+C:\Users\49707\miniconda3\Lib\site-packages\litellm\llms\custom_httpx\async_client_cleanup.py:66: DeprecationWarning: There is no current event loop
+  loop = asyncio.get_event_loop()
+2025-09-18 16:51:53,022 - asyncio - DEBUG - Using proactor: IocpProactor
+2025-09-18 16:51:55,890 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2025-09-18 16:52:59,482 - matplotlib - DEBUG - matplotlib data path: C:\Users\49707\miniconda3\Lib\site-packages\matplotlib\mpl-data
+2025-09-18 16:52:59,516 - matplotlib - DEBUG - CONFIGDIR=C:\Users\49707\.matplotlib
+2025-09-18 16:52:59,519 - matplotlib - DEBUG - interactive is False
+2025-09-18 16:52:59,519 - matplotlib - DEBUG - platform is win32
+2025-09-18 16:52:59,729 - matplotlib - DEBUG - CACHEDIR=C:\Users\49707\.matplotlib
+2025-09-18 16:52:59,738 - matplotlib.font_manager - DEBUG - Using fontManager instance from C:\Users\49707\.matplotlib\fontlist-v390.json
+2025-09-18 16:53:03,020 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/agents.yaml
+2025-09-18 16:53:03,054 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/agents.yaml
+2025-09-18 16:53:03,055 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_researcher', 'financial_data_expert', 'technical_analyst', 'data_validation_expert', 'fundamental_analyst', 'risk_assessment_specialist', 'industry_expert', 'investment_strategy_advisor', 'report_generator', 'quality_control_specialist', 'data_validator', 'market_sentiment_analyst', 'data_collection_coordinator', 'task_allocation_coordinator', 'decision_committee_chairman', 'collaboration_optimizer']
+2025-09-18 16:53:03,056 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/tasks.yaml
+2025-09-18 16:53:03,097 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/tasks.yaml
+2025-09-18 16:53:03,098 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_research_task', 'financial_data_collection_task', 'technical_analysis_task', 'fundamental_analysis_task', 'risk_assessment_task', 'industry_analysis_task', 'investment_recommendation_task', 'report_generation_task', 'quality_control_task', 'data_validation_task', 'sentiment_analysis_task', 'dynamic_task_allocation_task', 'collective_decision_task', 'collaboration_optimization_task', 'collaboration_coordination_task']
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:53:03,110 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:53:03,137 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:53:03,138 - src.crews.data_collection_crew - DEBUG - agents_config内容: 空
+2025-09-18 16:53:03,138 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到market_researcher键
+2025-09-18 16:53:03,145 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:53:03,147 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E0F631A0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E146F770>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,147 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E1365460>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E0EBCA40>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,153 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:53:03,153 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E1365460>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,154 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E26A5BE0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,158 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_validation_expert键
+2025-09-18 16:53:03,161 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_coordination_agent键
+2025-09-18 16:53:03,165 - src.crews.data_collection_crew - DEBUG - tasks_config内容: 空
+2025-09-18 16:53:03,165 - src.crews.data_collection_crew - ERROR - tasks_config为空，请检查配置文件加载是否成功
+2025-09-18 16:53:03,165 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:53:03,166 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2735190>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2735310>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,168 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2735550>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2735B50>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,168 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:53:03,168 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2735550>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,169 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E27357F0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,169 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_validation_task键
+2025-09-18 16:53:03,171 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_coordination_task键
+2025-09-18 16:53:03,176 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:53:03,179 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E25583B0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E27357F0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,181 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2735610>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E27355E0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,184 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:53:03,185 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E25583B0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,186 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E0F80DD0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,190 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:53:03,191 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E0F80DD0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E25583B0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,191 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2736300>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E27361B0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,192 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:53:03,193 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E0F80DD0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,193 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E25583B0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:53:03,244 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:53:03,257 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:53:03,462 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:53:03,476 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:53:03,477 - src.stock_analysis_system - INFO - 股票分析系统初始化完成
+2025-09-18 16:53:03,477 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/agents.yaml
+2025-09-18 16:53:03,550 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/agents.yaml
+2025-09-18 16:53:03,550 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_researcher', 'financial_data_expert', 'technical_analyst', 'data_validation_expert', 'fundamental_analyst', 'risk_assessment_specialist', 'industry_expert', 'investment_strategy_advisor', 'report_generator', 'quality_control_specialist', 'data_validator', 'market_sentiment_analyst', 'data_collection_coordinator', 'task_allocation_coordinator', 'decision_committee_chairman', 'collaboration_optimizer']
+2025-09-18 16:53:03,559 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/tasks.yaml
+2025-09-18 16:53:03,631 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/tasks.yaml
+2025-09-18 16:53:03,631 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_research_task', 'financial_data_collection_task', 'technical_analysis_task', 'fundamental_analysis_task', 'risk_assessment_task', 'industry_analysis_task', 'investment_recommendation_task', 'report_generation_task', 'quality_control_task', 'data_validation_task', 'sentiment_analysis_task', 'dynamic_task_allocation_task', 'collective_decision_task', 'collaboration_optimization_task', 'collaboration_coordination_task']
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:53:03,643 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:53:03,645 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:53:03,646 - src.crews.data_collection_crew - DEBUG - agents_config内容: 空
+2025-09-18 16:53:03,646 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到market_researcher键
+2025-09-18 16:53:03,650 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:53:03,650 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2735F40>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2737620>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,651 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2736840>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E27376E0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,655 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:53:03,656 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2580380>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,657 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2736780>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,660 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_validation_expert键
+2025-09-18 16:53:03,662 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_coordination_agent键
+2025-09-18 16:53:03,666 - src.crews.data_collection_crew - DEBUG - tasks_config内容: 空
+2025-09-18 16:53:03,666 - src.crews.data_collection_crew - ERROR - tasks_config为空，请检查配置文件加载是否成功
+2025-09-18 16:53:03,667 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:53:03,667 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2737770>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2737FB0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,667 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2737D40>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2735B80>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,669 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:53:03,669 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2737D40>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,669 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E27372C0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,670 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_validation_task键
+2025-09-18 16:53:03,670 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_coordination_task键
+2025-09-18 16:53:03,671 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:53:03,672 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E27372C0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2737F80>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,672 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2735FA0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E27372F0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,676 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:53:03,676 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E26CE570>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,677 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E27372C0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,680 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:53:03,680 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E26CE570>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E27372C0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,681 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2735580>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E279C260>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,681 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:53:03,681 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E26CE570>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:03,682 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E27372C0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:53:03,751 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:53:03,765 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:53:03,821 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:53:03,835 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:53:03,836 - src.stock_analysis_system - INFO - 股票分析系统初始化完成
+2025-09-18 16:53:03,836 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/agents.yaml
+2025-09-18 16:53:03,882 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/agents.yaml
+2025-09-18 16:53:03,883 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_researcher', 'financial_data_expert', 'technical_analyst', 'data_validation_expert', 'fundamental_analyst', 'risk_assessment_specialist', 'industry_expert', 'investment_strategy_advisor', 'report_generator', 'quality_control_specialist', 'data_validator', 'market_sentiment_analyst', 'data_collection_coordinator', 'task_allocation_coordinator', 'decision_committee_chairman', 'collaboration_optimizer']
+2025-09-18 16:53:03,894 - src.crews.data_collection_crew - DEBUG - 尝试加载配置文件: E:\sss\crewai\config/tasks.yaml
+2025-09-18 16:53:03,982 - src.crews.data_collection_crew - DEBUG - 成功加载配置文件: config/tasks.yaml
+2025-09-18 16:53:03,982 - src.crews.data_collection_crew - DEBUG - 配置内容: ['market_research_task', 'financial_data_collection_task', 'technical_analysis_task', 'fundamental_analysis_task', 'risk_assessment_task', 'industry_analysis_task', 'investment_recommendation_task', 'report_generation_task', 'quality_control_task', 'data_validation_task', 'sentiment_analysis_task', 'dynamic_task_allocation_task', 'collective_decision_task', 'collaboration_optimization_task', 'collaboration_coordination_task']
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:53:03,992 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:53:04,023 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:53:04,024 - src.crews.data_collection_crew - DEBUG - agents_config内容: 空
+2025-09-18 16:53:04,026 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到market_researcher键
+2025-09-18 16:53:04,030 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:53:04,031 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2580F80>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2580BC0>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,031 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E27379B0>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2736030>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,035 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:53:04,036 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2580F80>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,036 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2736150>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,039 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_validation_expert键
+2025-09-18 16:53:04,047 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到data_coordination_agent键
+2025-09-18 16:53:04,050 - src.crews.data_collection_crew - DEBUG - tasks_config内容: 空
+2025-09-18 16:53:04,053 - src.crews.data_collection_crew - ERROR - tasks_config为空，请检查配置文件加载是否成功
+2025-09-18 16:53:04,055 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:53:04,057 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2737F20>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2737620>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,058 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2737980>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2737890>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,060 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:53:04,063 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2737980>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,066 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2735490>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,067 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_validation_task键
+2025-09-18 16:53:04,067 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到data_coordination_task键
+2025-09-18 16:53:04,068 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到financial_data_expert键
+2025-09-18 16:53:04,068 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert时出错: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2737980>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2737F20>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,069 - src.crews.data_collection_crew - ERROR - 创建financial_data_expert智能体失败，跳过: 2 validation errors for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E0CB0680>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E146F770>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,072 - src.crews.data_collection_crew - ERROR - agents_config为空或找不到technical_analyst键
+2025-09-18 16:53:04,073 - src.crews.data_collection_crew - ERROR - 创建technical_analyst时出错: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E0CB0680>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,074 - src.crews.data_collection_crew - ERROR - 创建technical_analyst智能体失败，跳过: 1 validation error for Agent
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E146F770>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,077 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:53:04,078 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E146F770>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E0CB0680>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,079 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task任务失败，跳过: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E279CB30>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E279CB00>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,079 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到technical_analysis_task键
+2025-09-18 16:53:04,081 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task时出错: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E146F770>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:04,081 - src.crews.data_collection_crew - ERROR - 创建technical_data_collection_task任务失败，跳过: 1 validation error for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E0CB0680>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:53:04,130 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:53:04,131 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+File not found: E:\sss\crewai\src\crews\config\agents.yaml
+2025-09-18 16:53:04,227 - root - WARNING - Agent config file not found at E:\sss\crewai\src\crews\config\agents.yaml. Proceeding with empty agent configurations.
+File not found: E:\sss\crewai\src\crews\config\tasks.yaml
+2025-09-18 16:53:04,240 - root - WARNING - Task config file not found at E:\sss\crewai\src\crews\config\tasks.yaml. Proceeding with empty task configurations.
+2025-09-18 16:53:04,241 - src.stock_analysis_system - INFO - 股票分析系统初始化完成
+2025-09-18 16:53:04,277 - __main__ - INFO - 模板文件已存在，使用现有模板
+启动Web应用...
+访问地址: http://localhost:5000
+2025-09-18 16:53:04,381 - werkzeug - WARNING -  * Debugger is active!
+2025-09-18 16:53:04,594 - werkzeug - INFO -  * Debugger PIN: 836-506-828
+2025-09-18 16:53:04,997 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:53:04] "GET /monitor/status HTTP/1.1" 200 -
+2025-09-18 16:53:05,007 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:53:05] "GET /monitor/status HTTP/1.1" 200 -
+2025-09-18 16:53:05,077 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:53:05] "GET / HTTP/1.1" 200 -
+2025-09-18 16:53:05,310 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:53:05] "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 -
+2025-09-18 16:53:18,417 - src.stock_analysis_system - INFO - 开始分析股票: 贵州茅台 (600519)
+2025-09-18 16:53:18,417 - src.stock_analysis_system - INFO - 第一阶段：数据收集
+2025-09-18 16:53:18,418 - src.crews.data_collection_crew - INFO - 启动多智能体协作数据收集: 贵州茅台 (600519)
+2025-09-18 16:53:18,419 - src.crews.data_collection_crew - ERROR - tasks_config为空或找不到financial_data_collection_task键
+2025-09-18 16:53:18,421 - src.crews.data_collection_crew - ERROR - 创建financial_data_collection_task时出错: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E2831460>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E2831490>, input_type=FundamentalAnalysisTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+2025-09-18 16:53:18,422 - src.crews.data_collection_crew - ERROR - 多智能体协作数据收集失败: 2 validation errors for Task
+tools.0
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.akshare_tools....t at 0x00000246E27FA960>, input_type=AkShareTool]
+    For further information visit https://errors.pydantic.dev/2.11/v/model_type
+tools.1
+  Input should be a valid dictionary or instance of BaseTool [type=model_type, input_value=<src.tools.fundamental_to...t at 0x00000246E28311C0>, input_type=FundamentalAnalysisTool]
