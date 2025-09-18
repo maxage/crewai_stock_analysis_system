@@ -1,315 +1,4 @@
-"""
-Web应用界面
-提供股票分析系统的Web界面
-"""
-import sys
-import os
 
-# 添加项目根目录到Python路径，解决相对导入问题
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from flask import Flask, render_template, request, jsonify, send_file
-import json
-from datetime import datetime
-from typing import Dict, Any, List
-import logging
-
-from src.stock_analysis_system import StockAnalysisSystem
-from src.utils.batch_analyzer import BatchStockAnalyzer
-from src.utils.monitor import StockMonitor
-
-# 设置日志
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# 明确指定templates文件夹的绝对路径
-templates_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'templates')
-app = Flask(__name__, template_folder=templates_dir)
-app.config['SECRET_KEY'] = 'your-secret-key-here'
-
-# 初始化系统组件
-analysis_system = StockAnalysisSystem()
-batch_analyzer = BatchStockAnalyzer()
-monitor = StockMonitor()
-
-# 全局变量
-analysis_history = []
-monitoring_status = {"active": False, "stocks": [], "rules": []}
-
-
-@app.route('/')
-def index():
-    """首页"""
-    return render_template('index.html')
-
-
-@app.route('/analyze', methods=['POST'])
-def analyze():
-    """分析单只股票"""
-    try:
-        data = request.get_json()
-        company = data.get('company', '')
-        ticker = data.get('ticker', '')
-
-        if not company or not ticker:
-            return jsonify({'success': False, 'error': '请提供公司名称和股票代码'})
-
-        # 执行分析
-        result = analysis_system.analyze_stock(company, ticker)
-
-        # 添加到历史记录
-        analysis_history.append({
-            'company': company,
-            'ticker': ticker,
-            'timestamp': datetime.now().isoformat(),
-            'success': result['success']
-        })
-
-        # 保持历史记录在合理范围内
-        if len(analysis_history) > 100:
-            analysis_history[:] = analysis_history[-100:]
-
-        return jsonify(result)
-
-    except Exception as e:
-        logger.error(f"分析股票失败: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-
-@app.route('/batch_analyze', methods=['POST'])
-def batch_analyze():
-    """批量分析"""
-    try:
-        data = request.get_json()
-        stocks = data.get('stocks', [])
-        strategy = data.get('strategy', 'parallel')
-
-        if not stocks:
-            return jsonify({'success': False, 'error': '请提供股票列表'})
-
-        # 设置进度回调
-        progress_updates = []
-
-        def progress_callback(progress):
-            progress_updates.append(progress)
-
-        batch_analyzer.set_progress_callback(progress_callback)
-
-        # 执行批量分析
-        result = batch_analyzer.analyze_multiple_stocks(stocks, strategy)
-
-        # 添加进度更新到结果
-        result['progress_updates'] = progress_updates
-
-        return jsonify(result)
-
-    except Exception as e:
-        logger.error(f"批量分析失败: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-
-@app.route('/monitor/add_stock', methods=['POST'])
-def add_monitor_stock():
-    """添加监控股票"""
-    try:
-        data = request.get_json()
-        company = data.get('company', '')
-        ticker = data.get('ticker', '')
-        interval = data.get('interval', 300)
-
-        if not company or not ticker:
-            return jsonify({'success': False, 'error': '请提供公司名称和股票代码'})
-
-        success = monitor.add_stock_to_monitor(company, ticker, interval)
-
-        if success:
-            # 更新监控状态
-            monitoring_status['stocks'].append({
-                'company': company,
-                'ticker': ticker,
-                'interval': interval,
-                'added_time': datetime.now().isoformat()
-            })
-
-        return jsonify({'success': success})
-
-    except Exception as e:
-        logger.error(f"添加监控股票失败: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-
-@app.route('/monitor/remove_stock', methods=['POST'])
-def remove_monitor_stock():
-    """移除监控股票"""
-    try:
-        data = request.get_json()
-        ticker = data.get('ticker', '')
-
-        if not ticker:
-            return jsonify({'success': False, 'error': '请提供股票代码'})
-
-        success = monitor.remove_stock_from_monitor(ticker)
-
-        if success:
-            # 更新监控状态
-            monitoring_status['stocks'] = [
-                s for s in monitoring_status['stocks'] if s['ticker'] != ticker
-            ]
-
-        return jsonify({'success': success})
-
-    except Exception as e:
-        logger.error(f"移除监控股票失败: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-
-@app.route('/monitor/add_rule', methods=['POST'])
-def add_alert_rule():
-    """添加预警规则"""
-    try:
-        data = request.get_json()
-        rule_id = data.get('rule_id', '')
-        ticker = data.get('ticker', '')
-        rule_type = data.get('rule_type', '')
-        condition = data.get('condition', '')
-        threshold = data.get('threshold', 0)
-        message = data.get('message', '')
-
-        if not all([rule_id, ticker, rule_type, condition, message]):
-            return jsonify({'success': False, 'error': '请提供完整的规则信息'})
-
-        success = monitor.add_alert_rule(rule_id, ticker, rule_type, condition, threshold, message)
-
-        if success:
-            # 更新监控状态
-            monitoring_status['rules'].append({
-                'rule_id': rule_id,
-                'ticker': ticker,
-                'rule_type': rule_type,
-                'condition': condition,
-                'threshold': threshold,
-                'message': message,
-                'created_time': datetime.now().isoformat()
-            })
-
-        return jsonify({'success': success})
-
-    except Exception as e:
-        logger.error(f"添加预警规则失败: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-
-@app.route('/monitor/start', methods=['POST'])
-def start_monitoring():
-    """启动监控"""
-    try:
-        data = request.get_json()
-        interval = data.get('interval', 300)
-
-        monitor.start_monitoring(interval)
-        monitoring_status['active'] = True
-
-        return jsonify({'success': True})
-
-    except Exception as e:
-        logger.error(f"启动监控失败: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-
-@app.route('/monitor/stop', methods=['POST'])
-def stop_monitoring():
-    """停止监控"""
-    try:
-        monitor.stop_monitoring()
-        monitoring_status['active'] = False
-
-        return jsonify({'success': True})
-
-    except Exception as e:
-        logger.error(f"停止监控失败: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-
-@app.route('/monitor/status')
-def get_monitor_status():
-    """获取监控状态"""
-    try:
-        status = monitor.get_monitoring_status()
-        return jsonify({
-            'status': status,
-            'config': monitoring_status
-        })
-    except Exception as e:
-        logger.error(f"获取监控状态失败: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-
-@app.route('/history')
-def get_history():
-    """获取分析历史"""
-    try:
-        limit = request.args.get('limit', 50, type=int)
-        return jsonify({
-            'success': True,
-            'history': analysis_history[-limit:]
-        })
-    except Exception as e:
-        logger.error(f"获取分析历史失败: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-
-@app.route('/export/<export_type>')
-def export_data(export_type):
-    """导出数据"""
-    try:
-        if export_type == 'json':
-            return jsonify({
-                'history': analysis_history,
-                'monitoring_status': monitoring_status,
-                'export_time': datetime.now().isoformat()
-            })
-        elif export_type == 'csv':
-            import pandas as pd
-            df = pd.DataFrame(analysis_history)
-            csv_data = df.to_csv(index=False)
-            return csv_data, 200, {
-                'Content-Type': 'text/csv',
-                'Content-Disposition': 'attachment; filename="analysis_history.csv"'
-            }
-        else:
-            return jsonify({'success': False, 'error': '不支持的导出格式'})
-
-    except Exception as e:
-        logger.error(f"导出数据失败: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-
-@app.route('/reports/<filename>')
-def get_report(filename):
-    """获取报告文件"""
-    try:
-        return send_file(f'reports/{filename}', as_attachment=True)
-    except Exception as e:
-        logger.error(f"获取报告文件失败: {str(e)}")
-        return jsonify({'success': False, 'error': str(e)})
-
-
-@app.route('/health')
-def health_check():
-    """健康检查"""
-    return jsonify({
-        'status': 'healthy',
-        'timestamp': datetime.now().isoformat(),
-        'version': '1.0.0'
-    })
-
-
-def create_templates():
-    """创建HTML模板"""
-    os.makedirs('templates', exist_ok=True)
-
-    # 首页模板
-    index_html = """
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -468,8 +157,21 @@ def create_templates():
                     <label for="ticker">股票代码:</label>
                     <input type="text" id="ticker" name="ticker" required placeholder="例如：AAPL">
                 </div>
-                <button type="submit">开始分析</button>
+                <button type="submit" id="analyzeButton">开始分析</button>
             </form>
+            <div id="processingIndicator" style="display: none;">
+                <div class="processing">
+                    <div class="spinner"></div>
+                    <p>正在分析中，请稍候...</p>
+                    <div class="processing-steps">
+                        <div class="step">1. 数据收集</div>
+                        <div class="step">2. 财务分析</div>
+                        <div class="step">3. 行业对比</div>
+                        <div class="step">4. 风险评估</div>
+                        <div class="step">5. 生成报告</div>
+                    </div>
+                </div>
+            </div>
             <div id="singleResult"></div>
         </div>
 
@@ -588,6 +290,14 @@ def create_templates():
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData);
 
+            // 显示处理中状态并禁用按钮
+            const analyzeButton = document.getElementById('analyzeButton');
+            const processingIndicator = document.getElementById('processingIndicator');
+            
+            analyzeButton.disabled = true;
+            analyzeButton.innerHTML = '分析中...';
+            processingIndicator.style.display = 'block';
+
             fetch('/analyze', {
                 method: 'POST',
                 headers: {
@@ -597,6 +307,15 @@ def create_templates():
             })
             .then(response => response.json())
             .then(data => {
+                // 隐藏处理中状态并恢复按钮
+                const analyzeButton = document.getElementById('analyzeButton');
+                const processingIndicator = document.getElementById('processingIndicator');
+                
+                // 恢复按钮状态
+                analyzeButton.disabled = false;
+                analyzeButton.innerHTML = '开始分析';
+                processingIndicator.style.display = 'none';
+
                 const resultDiv = document.getElementById('singleResult');
                 if (data.success) {
                     resultDiv.innerHTML = `
@@ -614,6 +333,15 @@ def create_templates():
                 }
             })
             .catch(error => {
+                // 隐藏处理中状态并恢复按钮
+                const analyzeButton = document.getElementById('analyzeButton');
+                const processingIndicator = document.getElementById('processingIndicator');
+                
+                // 恢复按钮状态
+                analyzeButton.disabled = false;
+                analyzeButton.innerHTML = '开始分析';
+                processingIndicator.style.display = 'none';
+                
                 document.getElementById('singleResult').innerHTML = `<div class="error">请求失败: ${error}</div>`;
             });
         });
@@ -749,19 +477,4 @@ def create_templates():
     </script>
 </body>
 </html>
-    """
-
-    with open('templates/index.html', 'w', encoding='utf-8') as f:
-        f.write(index_html)
-
-    logger.info("HTML模板已创建")
-
-
-if __name__ == '__main__':
-    # 创建模板
-    create_templates()
-
-    # 启动Web应用
-    print("启动Web应用...")
-    print("访问地址: http://localhost:5000")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    

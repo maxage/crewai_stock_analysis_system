@@ -13,7 +13,8 @@ pandas>=2.0.0
 numpy>=1.24.0
 
 # 金融数据获取
-yfinance>=0.2.0
+# yfinance>=0.2.0
+akshare>=1.11.23
 
 # 网络请求
 requests>=2.31.0

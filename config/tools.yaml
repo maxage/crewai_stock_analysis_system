@@ -9,11 +9,18 @@ scrape_website_tool:
   description: "抓取指定网站的内容进行分析"
 
 # 自定义工具配置
-yfinance_tool:
-  name: "雅虎财经数据工具"
-  description: "获取股票的财务数据、价格数据和历史数据"
-  module: "src.tools.financial_tools"
-  class: "YFinanceTool"
+# yfinance_tool:
+#   name: "雅虎财经数据工具"
+#   description: "获取股票的财务数据、价格数据和历史数据"
+#   module: "src.tools.financial_tools"
+#   class: "YFinanceTool"
+
+# 使用AkShare替换YFinance
+akshare_tool:
+  name: "AkShare数据工具"
+  description: "获取A股股票的财务数据、价格数据和历史数据"
+  module: "src.tools.akshare_tools"
+  class: "AkShareTool"
 
 financial_calculator_tool:
   name: "金融计算器工具"
@@ -73,11 +80,11 @@ sentiment_analysis_tool:
 market_research_tools:
   - serper_dev_tool
   - scrape_website_tool
-  - yfinance_tool
+  - akshare_tool
   - sentiment_analysis_tool
 
 financial_analysis_tools:
-  - yfinance_tool
+  - akshare_tool
   - financial_calculator_tool
   - data_validation_tool
 

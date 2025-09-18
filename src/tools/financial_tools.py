@@ -3,12 +3,14 @@
 """
 from crewai import Agent, Task
 from typing import Dict, Any, List, Optional
-import yfinance as yf
+import akshare as ak
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import logging
 import time
+# 导入我们新创建的AkShare工具
+from .akshare_tools import AkShareTool
 
 # 自定义工具基类
 class BaseTool:
@@ -27,14 +29,14 @@ logger.setLevel(logging.DEBUG)  # 确保该模块的日志级别为DEBUG
 
 
 class YFinanceTool(BaseTool):
-    """雅虎财经数据工具"""
+    """兼容工具 - 内部使用AkShare实现"""
 
-    name: str = "Yahoo Finance Data Tool"
-    description: str = "获取股票的财务数据、价格数据和市场信息"
+    name: str = "兼容数据工具"
+    description: str = "兼容工具 - 获取股票的财务数据、价格数据和市场信息（内部使用AkShare实现）"
 
     def _run(self, ticker: str, period: str = "1y") -> str:
         """
-        获取股票数据
+        获取股票数据（内部使用AkShareTool实现）
 
         Args:
             ticker: 股票代码
@@ -44,49 +46,24 @@ class YFinanceTool(BaseTool):
             股票数据报告
         """
         try:
-            # 添加请求延迟以避免Too Many Requests错误
-            time.sleep(1)
-            # 添加详细的请求参数日志
-            logger.debug(f"[API请求] 开始获取 {ticker} 的数据，周期: {period}")
-            logger.info(f"获取 {ticker} 的数据，周期: {period}")
-
-            # 获取股票对象
-            logger.debug(f"[API请求] 创建yfinance Ticker对象: {ticker}")
-            # 添加额外延迟
-            time.sleep(0.5)
-            stock = yf.Ticker(ticker)
-
-            # 获取基本信息
-            logger.debug(f"[API请求] 获取基本信息: {ticker}")
-            info = stock.info
-            logger.debug(f"[API响应] 成功获取基本信息，字段数量: {len(info) if isinstance(info, dict) else 0}")
-
-            # 获取历史价格数据
-            logger.debug(f"[API请求] 获取历史价格数据: {ticker}, 周期: {period}")
-            # 添加延迟避免请求过于频繁
-            time.sleep(0.5)
-            hist = stock.history(period=period)
-            logger.debug(f"[API响应] 成功获取历史数据，数据行数: {len(hist) if hasattr(hist, 'shape') else 0}")
-
-            # 获取财务数据
-            logger.debug(f"[API请求] 获取财务报表数据: {ticker}")
-            # 添加延迟避免请求过于频繁
-            time.sleep(0.5)
-            financials = stock.financials
-            # 添加额外延迟
-            time.sleep(0.3)
-            balance_sheet = stock.balance_sheet
-            # 添加额外延迟
-            time.sleep(0.3)
-            cashflow = stock.cashflow
-            logger.debug(f"[API响应] 成功获取财务数据，财报行数: {len(financials) if hasattr(financials, 'shape') else 0}")
-
-            # 生成数据报告
-            report = self._generate_stock_report(ticker, info, hist, financials, balance_sheet, cashflow)
-            logger.debug(f"[数据处理] 成功生成数据报告，长度: {len(report)} 字符")
-
-            logger.info(f"成功获取 {ticker} 的数据")
-            return report
+            # 记录工具已迁移的信息
+            logger.info(f"YFinanceTool已迁移至AkShareTool，正在使用AkShare获取 {ticker} 的数据")
+            
+            # 内部使用AkShareTool实现功能
+            ak_tool = AkShareTool()
+            # 注意：AkShare需要A股格式的股票代码，这里进行简单的格式转换
+            # 如果输入的代码不是A股格式，尝试添加前缀
+            if not (ticker.startswith('sh') or ticker.startswith('sz')):
+                # 默认假设是上交所股票
+                adjusted_ticker = f'sh{ticker}'
+                logger.warning(f"股票代码格式非A股标准格式，尝试添加前缀: {ticker} -> {adjusted_ticker}")
+            else:
+                adjusted_ticker = ticker
+            
+            # 使用AkShareTool获取数据
+            result = ak_tool._run(adjusted_ticker, period)
+            
+            return result
 
         except Exception as e:
             # 添加详细的错误日志
@@ -552,10 +529,11 @@ class MarketDataTool(BaseTool):
 
 # 使用示例
 if __name__ == "__main__":
-    # 测试雅虎财经工具
-    yf_tool = YFinanceTool()
-    print("=== 测试雅虎财经工具 ===")
-    result = yf_tool._run("AAPL", "6mo")
+    # 测试AkShare工具
+    ak_tool = AkShareTool()
+    print("=== 测试AkShare工具 ===")
+    # 注意：akshare需要A股格式的股票代码
+    result = ak_tool._run("sh600000", "6mo")
     print(result[:500] + "...")
 
     # 测试金融计算器工具

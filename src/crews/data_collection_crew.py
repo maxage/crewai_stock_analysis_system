@@ -8,7 +8,7 @@ import logging
 import yaml
 import os
 from datetime import datetime
-from src.tools.financial_tools import YFinanceTool
+from src.tools.akshare_tools import AkShareTool
 from src.tools.fundamental_tools import FundamentalAnalysisTool
 
 # 设置日志
@@ -108,11 +108,11 @@ class DataCollectionCrew:
             logger.info(f"开始收集 {company} ({ticker}) 的实际数据")
 
             # 初始化工具
-            yfinance_tool = YFinanceTool()
+            akshare_tool = AkShareTool()
             
-            # 使用YFinanceTool获取实际财务和市场数据
-            logger.info(f"使用Yahoo Finance获取 {ticker} 的数据")
-            financial_data = yfinance_tool._run(ticker, period="1y")
+            # 使用AkShareTool获取实际财务和市场数据
+            logger.info(f"使用AkShare获取 {ticker} 的数据")
+            financial_data = akshare_tool._run(ticker, period="1y")
             
             # 验证数据是否成功获取
             data_validation = "数据验证通过" if "数据失败" not in financial_data else "数据获取失败"
@@ -123,9 +123,9 @@ class DataCollectionCrew:
                 'company': company,
                 'ticker': ticker,
                 'data': {
-                    'market_research': f"{company}({ticker})的市场研究数据已通过Yahoo Finance获取",
+                    'market_research': f"{company}({ticker})的市场研究数据已通过AkShare获取",
                     'financial_data': financial_data,  # 实际的财务数据报告
-                    'technical_analysis': f"{ticker}的技术分析数据已通过Yahoo Finance获取",
+                    'technical_analysis': f"{ticker}的技术分析数据已通过AkShare获取",
                     'data_validation': data_validation
                 },
                 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')

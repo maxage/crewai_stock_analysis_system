@@ -19,7 +19,7 @@ financial_data_expert:
     你是金融数据专家，精通财务数据分析和处理。
     你能够快速解析复杂的财务报表，提取关键指标，
     并进行同行业对比分析，为投资决策提供数据支持。
-  tools: [yfinance_tool, financial_calculator_tool]
+  tools: [akshare_tool, financial_calculator_tool]
 
 technical_analyst:
   role: >

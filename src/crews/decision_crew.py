@@ -108,13 +108,13 @@ class DecisionCrew:
                 logger.info(f"使用分析数据进行决策: {company}")
                 
                 # 提取基本面分析数据
-                fundamental_analysis = analysis_data.get('data', {}).get('fundamental_analysis', {})
+                fundamental_analysis = analysis_data.get('fundamental_analysis', {})
                 
                 # 提取风险评估数据
-                risk_assessment = analysis_data.get('data', {}).get('risk_assessment', {})
+                risk_assessment = analysis_data.get('risk_assessment', {})
                 
                 # 提取行业分析数据
-                industry_analysis = analysis_data.get('data', {}).get('industry_analysis', {})
+                industry_analysis = analysis_data.get('industry_analysis', {})
                 
                 # 根据分析数据生成投资建议
                 # 这里我们使用实际数据，而不是模拟数据
