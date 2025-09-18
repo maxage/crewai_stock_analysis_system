@@ -486,32 +486,84 @@ class DecisionCrew:
     @task
     def report_generation_task(self) -> Task:
         """报告生成任务"""
-        return Task(
-            config=self.tasks_config['report_generation_task'],
-            tools=[ReportWritingTool(), DataExportTool()],
-            context=[],  # 将在执行时动态设置
-            human_input=False,
-            output_file='final_investment_report.md',
-        )
+        # 检查配置是否存在，如果不存在则使用默认配置
+        if 'report_generation_task' in self.tasks_config:
+            return Task(
+                config=self.tasks_config['report_generation_task'],
+                tools=[ReportWritingTool(), DataExportTool()],
+                context=[],  # 将在执行时动态设置
+                human_input=False,
+                output_file='final_investment_report.md',
+            )
+        else:
+            # 使用默认配置
+            return Task(
+                description='生成{company}的投资分析报告',
+                expected_output='完整的投资分析报告',
+                tools=[ReportWritingTool(), DataExportTool()],
+                context=[],  # 将在执行时动态设置
+                human_input=False,
+                output_file='final_investment_report.md',
+            )
 
     @task
     def quality_assurance_task(self) -> Task:
         """质量保证任务"""
-        return Task(
-            config=self.tasks_config['quality_assurance_task'],
-            tools=[ReportWritingTool()],
-            context=[],  # 将在执行时动态设置
-            human_input=False,
-            output_file='quality_assurance_report.md',
-        )
+        # 检查配置是否存在，如果不存在则使用默认配置
+        if 'quality_assurance_task' in self.tasks_config:
+            return Task(
+                config=self.tasks_config['quality_assurance_task'],
+                tools=[ReportWritingTool()],
+                context=[],  # 将在执行时动态设置
+                human_input=False,
+                output_file='quality_assurance_report.md',
+            )
+        else:
+            # 使用默认配置
+            return Task(
+                description='保证{company}投资决策的质量',
+                expected_output='质量保证报告',
+                tools=[ReportWritingTool()],
+                context=[],  # 将在执行时动态设置
+                human_input=False,
+                output_file='quality_assurance_report.md',
+            )
 
-    @crew
-    def crew(self) -> Crew:
+    @property
+    def agents(self) -> List[Agent]:
+        """获取所有智能体"""
+        return [
+            self.investment_advisor(),
+            self.risk_manager(),
+            self.portfolio_manager(),
+            self.market_strategist(),
+            self.ethics_compliance_officer(),
+            self.decision_moderator(),
+            self.report_generator(),
+            self.quality_assurance_specialist()
+        ]
+
+    @property
+    def tasks(self) -> List[Task]:
+        """获取所有任务"""
+        return [
+            self.investment_strategy_task(),
+            self.risk_assessment_task(),
+            self.portfolio_optimization_task(),
+            self.market_timing_task(),
+            self.compliance_review_task(),
+            self.collective_decision_task(),
+            self.report_generation_task(),
+            self.quality_assurance_task()
+        ]
+
+    def create_crew(self) -> Crew:
         """创建Crew实例 - 配置集体决策机制"""
         return Crew(
             agents=self.agents,  # 所有决策智能体
             tasks=self.tasks,    # 所有决策任务
             process=Process.hierarchical,  # 层次化决策流程
+            manager_llm='gpt-4o-mini',  # 管理者LLM，用于协调层次化流程
             verbose=True,
             memory=True,  # 启用团队记忆
             cache=True,   # 启用缓存
@@ -535,7 +587,8 @@ class DecisionCrew:
 
             # 执行集体决策
             logger.info("开始执行集体决策流程...")
-            result = self.crew().kickoff(inputs=decision_inputs)
+            crew_instance = self.create_crew()
+            result = crew_instance.kickoff(inputs=decision_inputs)
 
             # 收集决策过程中的所有输出
             decision_outputs = self._collect_decision_outputs()
