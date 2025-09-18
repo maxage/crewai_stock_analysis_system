@@ -1,29 +1,32 @@
 """
-分析团队
-负责基本面分析、风险分析和行业分析
+分析团队 - 使用CrewAI真正的多智能体协作
+负责基本面分析、风险分析和行业分析，展示智能体间的深度协作与集体决策
 """
 from crewai import Agent, Crew, Process, Task
-from typing import List, Dict, Any
+from crewai.project import CrewBase, agent, crew, task
+from typing import List, Dict, Any, Optional
 import logging
 import yaml
 import os
 import json
 from datetime import datetime
 from src.tools.fundamental_tools import FundamentalAnalysisTool
+from src.tools.technical_tools import TechnicalAnalysisTool
+from src.tools.financial_tools import FinancialCalculatorTool
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+@CrewBase
 class AnalysisCrew:
-    """分析团队"""
+    """分析团队 - 展示深度协作分析和集体决策"""
 
     def __init__(self):
         """初始化分析团队"""
         self.agents_config = self._load_config('config/agents.yaml')
         self.tasks_config = self._load_config('config/tasks.yaml')
-        self.crew = self._create_crew()
 
     def _load_config(self, config_file: str) -> Dict[str, Any]:
         """加载配置文件"""
@@ -38,239 +41,488 @@ class AnalysisCrew:
             logger.error(f"加载配置文件失败: {config_file}, 错误: {str(e)}")
             return {}
 
-    def _create_crew(self) -> Crew:
-        """创建Crew实例"""
-        agents = [
-            self._create_fundamental_analyst(),
-            self._create_risk_assessment_specialist(),
-            self._create_industry_expert()
-        ]
+    @agent
+    def fundamental_analyst(self) -> Agent:
+        """基本面分析师 - 负责公司基本面深度分析"""
+        return Agent(
+            config=self.agents_config['fundamental_analyst'],
+            verbose=True,
+            tools=[FundamentalAnalysisTool(), FinancialCalculatorTool()],
+            allow_delegation=True,  # 可以委托给风险或行业专家
+            max_iter=8,
+            memory=True,
+            cache=True,
+        )
 
+    @agent
+    def risk_assessment_specialist(self) -> Agent:
+        """风险评估专家 - 负责识别和量化投资风险"""
+        return Agent(
+            config=self.agents_config['risk_assessment_specialist'],
+            verbose=True,
+            tools=[FinancialCalculatorTool(), TechnicalAnalysisTool()],
+            allow_delegation=True,
+            max_iter=8,
+            memory=True,
+            cache=True,
+        )
+
+    @agent
+    def industry_expert(self) -> Agent:
+        """行业专家 - 负责行业地位和竞争分析"""
+        return Agent(
+            config=self.agents_config['industry_expert'],
+            verbose=True,
+            tools=[FundamentalAnalysisTool()],
+            allow_delegation=True,
+            max_iter=8,
+            memory=True,
+            cache=True,
+        )
+
+    @agent
+    def quantitative_analyst(self) -> Agent:
+        """量化分析师 - 负责数据建模和统计验证"""
+        return Agent(
+            role='量化分析师',
+            goal='使用数学和统计方法验证分析结论，构建预测模型',
+            backstory="""你是一位资深的量化分析师，拥有数学和统计学背景。
+            你擅长将复杂的市场数据转化为可量化的指标，构建预测模型，
+            并使用统计方法验证其他分析师的结论。你相信数据驱动的决策，
+            能够发现人类分析师可能忽略的模式和趋势。""",
+            verbose=True,
+            tools=[FinancialCalculatorTool(), TechnicalAnalysisTool()],
+            allow_delegation=True,
+            max_iter=8,
+            memory=True,
+            cache=True,
+        )
+
+    @agent
+    def analysis_coordinator(self) -> Agent:
+        """分析协调员 - 负责协调各分析师工作并整合结论"""
+        return Agent(
+            role='分析协调员',
+            goal='协调各分析师的工作，整合分析结果，解决分析冲突，形成最终投资判断',
+            backstory="""你是一位经验丰富的投资研究总监，擅长协调不同领域的专家。
+            你能够理解基本面、风险、行业和量化分析的专业内容，
+            识别不同分析师结论之间的差异和矛盾，促进专家间的讨论和辩论，
+            最终形成一致的投资建议。你具有很强的综合判断能力和决策能力。""",
+            verbose=True,
+            allow_delegation=True,
+            max_iter=10,
+            memory=True,
+            cache=True,
+        )
+
+    @task
+    def fundamental_analysis_task(self) -> Task:
+        """基本面分析任务 - 深度分析公司基本面"""
+        return Task(
+            config=self.tasks_config['fundamental_analysis_task'],
+            tools=[FundamentalAnalysisTool(), FinancialCalculatorTool()],
+            context=[],  # 将在执行时动态设置
+            human_input=False,
+            output_file='fundamental_analysis_report.md',
+        )
+
+    @task
+    def risk_assessment_task(self) -> Task:
+        """风险评估任务 - 全面评估投资风险"""
+        return Task(
+            config=self.tasks_config['risk_assessment_task'],
+            tools=[FinancialCalculatorTool(), TechnicalAnalysisTool()],
+            context=[],  # 将在执行时动态设置
+            human_input=False,
+            output_file='risk_assessment_report.md',
+        )
+
+    @task
+    def industry_analysis_task(self) -> Task:
+        """行业分析任务 - 分析行业地位和前景"""
+        return Task(
+            config=self.tasks_config['industry_analysis_task'],
+            tools=[FundamentalAnalysisTool()],
+            context=[],  # 将在执行时动态设置
+            human_input=False,
+            output_file='industry_analysis_report.md',
+        )
+
+    @task
+    def quantitative_validation_task(self) -> Task:
+        """量化验证任务 - 验证分析结论的统计显著性"""
+        return Task(
+            description="""
+            使用量化方法验证基本面、风险和行业分析的结论：
+
+            1. 构建统计模型验证预测的可靠性
+            2. 计算各项指标的历史相关性
+            3. 识别数据中的模式和异常值
+            4. 评估分析师判断的统计置信度
+            5. 提供量化化的投资建议
+
+            公司: {company}
+            股票代码: {ticker}
+            分析数据: {analysis_data}
+            """,
+            expected_output="""
+            量化验证报告，包含：
+            - 统计显著性测试结果
+            - 预测模型的准确性和置信区间
+            - 数据模式识别结果
+            - 量化投资建议和风险指标
+            - 对其他分析师结论的统计评价
+            """,
+            tools=[FinancialCalculatorTool(), TechnicalAnalysisTool()],
+            context=[],  # 将在执行时动态设置所有前置任务
+            human_input=False,
+            output_file='quantitative_validation_report.md',
+        )
+
+    @task
+    def analysis_coordination_task(self) -> Task:
+        """分析协调任务 - 整合所有分析结果并形成最终判断"""
+        return Task(
+            description="""
+            协调和整合所有分析师的工作，形成最终的投资判断：
+
+            1. 汇总基本面、风险、行业和量化分析的结果
+            2. 识别各分析师结论之间的分歧和矛盾
+            3. 促进分析师间的讨论和辩论
+            4. 评估各项证据的权重和可靠性
+            5. 解决分歧，形成一致的投资建议
+            6. 提供投资决策的详细理由
+
+            公司: {company}
+            股票代码: {ticker}
+            所有分析结果: {all_analysis_results}
+            """,
+            expected_output="""
+            最终投资分析报告，包含：
+            - 综合分析结论
+            - 各分析师观点的整合
+            - 分歧解决过程
+            - 最终投资建议（买入/卖出/持有）
+            - 建议的详细理由和依据
+            - 关键风险因素和应对策略
+            - 投资时间框架建议
+            """,
+            tools=[],  # 协调员主要使用分析和综合能力
+            context=[],  # 将在执行时动态设置所有前置任务
+            human_input=False,
+            output_file='final_investment_analysis.md',
+        )
+
+    @crew
+    def crew(self) -> Crew:
+        """创建Crew实例 - 配置深度分析协作"""
         return Crew(
-            agents=agents,
-            tasks=[],
-            process=Process.sequential,
-            verbose=True
-        )
-
-    def _create_fundamental_analyst(self) -> Agent:
-        """创建基本面分析师"""
-        config = self.agents_config.get('fundamental_analyst', {})
-        return Agent(
-            role=config.get('role', '基本面分析师'),
-            goal=config.get('goal', '评估公司基本面'),
-            backstory=config.get('backstory', '基本面分析专家'),
+            agents=self.agents,  # 所有分析师智能体
+            tasks=self.tasks,    # 所有分析任务
+            process=Process.hierarchical,  # 层次化协作，智能体自主讨论
             verbose=True,
-            allow_delegation=False,
-            max_iter=3
+            memory=True,  # 启用团队记忆，保留分析过程
+            cache=True,   # 启用缓存
+            planning=True,  # 启用规划功能
+            planning_llm='gpt-4o-mini',
+            share_crew=True,  # 允许智能体间共享信息
         )
 
-    def _create_risk_assessment_specialist(self) -> Agent:
-        """创建风险评估专家"""
-        config = self.agents_config.get('risk_assessment_specialist', {})
-        return Agent(
-            role=config.get('role', '风险评估专家'),
-            goal=config.get('goal', '评估投资风险'),
-            backstory=config.get('backstory', '风险管理专家'),
-            verbose=True,
-            allow_delegation=False,
-            max_iter=3
-        )
-
-    def _create_industry_expert(self) -> Agent:
-        """创建行业专家"""
-        config = self.agents_config.get('industry_expert', {})
-        return Agent(
-            role=config.get('role', '行业专家'),
-            goal=config.get('goal', '分析行业地位'),
-            backstory=config.get('backstory', '行业分析专家'),
-            verbose=True,
-            allow_delegation=False,
-            max_iter=3
-        )
-
-    def execute_analysis(self, company: str, ticker: str, data: Dict[str, Any] = None) -> Dict[str, Any]:
-        """执行分析流程"""
-        logger.info(f"开始分析 {company} ({ticker})")
-
+    def execute_collaborative_analysis(self, company: str, ticker: str,
+                                    collection_data: Dict[str, Any] = None) -> Dict[str, Any]:
+        """执行真正的多智能体协作分析"""
         try:
-            # 初始化基本面分析工具
-            fundamental_tool = FundamentalAnalysisTool()
-            
+            logger.info(f"启动多智能体协作分析: {company} ({ticker})")
+
             # 准备分析数据
-            analysis_input = {
-                'company': company,
-                'ticker': ticker,
-                'industry': '科技',  # 这里可以根据实际情况设置行业
-                'pe_ratio': 28.5,    # 模拟的市盈率
-                'industry_pe': 24.3, # 模拟的行业平均市盈率
-                'pb_ratio': 6.2,     # 模拟的市净率
-                'industry_pb': 4.8   # 模拟的行业平市净率
-            }
-            
-            # 如果有传入数据，使用实际数据
-            if data and isinstance(data, dict):
-                logger.info(f"使用传入的数据进行分析")
-                # 尝试从财务数据中提取关键指标
-                financial_data = data.get('financial_data', '')
-                if isinstance(financial_data, str) and financial_data.startswith("#"):
-                    # 这是通过YFinanceTool获取的格式化报告
-                    try:
-                        # 提取关键数据点
-                        if "市值" in financial_data:
-                            market_cap = financial_data.split("市值: ")[1].split("\n")[0]
-                            analysis_input['market_cap'] = market_cap
-                        if "当前价格" in financial_data:
-                            current_price = financial_data.split("当前价格: ")[1].split("\n")[0]
-                            analysis_input['current_price'] = current_price
-                    except Exception as e:
-                        logger.warning(f"从财务数据中提取指标失败: {str(e)}")
-            
-            # 执行基本面分析
-            logger.info(f"执行基本面分析")
-            company_data_json = json.dumps(analysis_input)
-            fundamental_analysis_result = fundamental_tool._run(company_data_json, analysis_type="comprehensive")
-            
-            # 构建分析结果
-            analysis_result = {
+            analysis_inputs = self._prepare_analysis_inputs(company, ticker, collection_data)
+
+            # 设置任务间的协作关系
+            self._setup_analysis_collaboration()
+
+            # 执行协作分析
+            logger.info("开始执行多智能体协作分析...")
+            result = self.crew().kickoff(inputs=analysis_inputs)
+
+            # 收集各智能体的分析输出
+            agent_outputs = self._collect_analysis_outputs()
+
+            # 计算协作分析评分
+            collaboration_scores = self._calculate_collaboration_scores(agent_outputs)
+
+            # 生成最终投资建议
+            final_recommendation = self._generate_final_recommendation(agent_outputs, collaboration_scores)
+
+            logger.info(f"多智能体协作分析完成: {company}")
+
+            return {
                 'success': True,
                 'company': company,
                 'ticker': ticker,
-                'data': {
-                    'fundamental_analysis': {
-                        'analysis_text': fundamental_analysis_result if fundamental_analysis_result else f'{company}的基本面分析结果',
-                        'financial_score': 75.5,
-                        'growth_potential': '高'
-                    },
-                    'risk_assessment': {
-                        'analysis_text': f'{ticker}的风险评估结果',
-                        'risk_level': '中等',
-                        'risk_factors': ['市场风险', '行业风险']
-                    },
-                    'industry_analysis': {
-                        'analysis_text': f'{company}的行业地位分析',
-                        'market_position': '领先',
-                        'competitiveness': '强'
-                    }
-                },
-                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                'result': result,
+                'agent_outputs': agent_outputs,
+                'collaboration_scores': collaboration_scores,
+                'final_recommendation': final_recommendation,
+                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'collaboration_metrics': self._analyze_collaboration_quality(agent_outputs)
             }
 
-            logger.info(f"分析完成: {company}")
-            return analysis_result
-
         except Exception as e:
-            error_msg = f"分析失败: {company}, 错误: {str(e)}"
+            error_msg = f"多智能体协作分析失败: {str(e)}"
             logger.error(error_msg)
             return {
                 'success': False,
                 'error': error_msg,
                 'company': company,
-                'ticker': ticker
+                'ticker': ticker,
+                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
 
-    def calculate_analysis_score(self, analysis_result: Dict[str, Any]) -> Dict[str, float]:
-        """计算分析评分"""
-        # 初始化默认分数
-        fundamental_score = 75.5
-        risk_score = 30.0
-        industry_score = 80.0
-        
-        # 尝试从实际分析结果中提取分数
-        if isinstance(analysis_result, dict):
-            # 从基本面分析获取分数
-            fundamental_analysis = analysis_result.get('fundamental_analysis', {})
-            if isinstance(fundamental_analysis, dict) and 'financial_score' in fundamental_analysis:
-                fundamental_score = float(fundamental_analysis['financial_score'])
-            
-            # 从风险评估获取分数
-            risk_assessment = analysis_result.get('risk_assessment', {})
-            if isinstance(risk_assessment, dict) and 'risk_level' in risk_assessment:
-                # 根据风险等级映射分数
-                risk_mapping = {
-                    '低': 20.0,
-                    '中等': 40.0,
-                    '高': 60.0,
-                    '未知': 50.0
-                }
-                risk_level = risk_assessment['risk_level']
-                risk_score = risk_mapping.get(risk_level, 40.0)
-            
-            # 从行业分析获取分数
-            industry_analysis = analysis_result.get('industry_analysis', {})
-            if isinstance(industry_analysis, dict) and 'market_position' in industry_analysis:
-                # 根据市场地位映射分数
-                position_mapping = {
-                    '领先': 85.0,
-                    '较强': 75.0,
-                    '一般': 60.0,
-                    '较弱': 40.0,
-                    '未知': 60.0
-                }
-                market_position = industry_analysis['market_position']
-                industry_score = position_mapping.get(market_position, 60.0)
-        
-        # 计算综合评分（加权平均）
-        # 基本面分析占40%，风险评估占30%，行业分析占30%
-        overall_score = (fundamental_score * 0.4) + ((100 - risk_score) * 0.3) + (industry_score * 0.3)
-        
-        scores = {
-            'fundamental_score': round(fundamental_score, 1),
-            'risk_score': round(risk_score, 1),
-            'industry_score': round(industry_score, 1),
-            'overall_score': round(overall_score, 1)
+    def _prepare_analysis_inputs(self, company: str, ticker: str,
+                               collection_data: Dict[str, Any] = None) -> Dict[str, Any]:
+        """准备分析输入数据"""
+        inputs = {
+            'company': company,
+            'ticker': ticker,
+            'analysis_data': collection_data or {}
         }
+
+        # 如果有数据收集结果，提取关键信息
+        if collection_data:
+            # 提取财务数据
+            financial_data = collection_data.get('financial_data', '')
+            if isinstance(financial_data, str) and len(financial_data) > 100:
+                inputs['financial_report'] = financial_data
+
+            # 提取市场研究数据
+            market_research = collection_data.get('market_research', '')
+            if market_research:
+                inputs['market_research'] = market_research
+
+            # 提取技术分析数据
+            technical_analysis = collection_data.get('technical_analysis', '')
+            if technical_analysis:
+                inputs['technical_analysis'] = technical_analysis
+
+        return inputs
+
+    def _setup_analysis_collaboration(self):
+        """设置分析任务间的协作关系"""
+        # 获取任务实例
+        fundamental_task = self.fundamental_analysis_task()
+        risk_task = self.risk_assessment_task()
+        industry_task = self.industry_analysis_task()
+        quant_task = self.quantitative_validation_task()
+        coordination_task = self.analysis_coordination_task()
+
+        # 量化验证依赖于所有基础分析任务
+        quant_task.context = [fundamental_task, risk_task, industry_task]
+
+        # 最终协调任务依赖于所有分析任务
+        coordination_task.context = [fundamental_task, risk_task, industry_task, quant_task]
+
+    def _collect_analysis_outputs(self) -> Dict[str, Any]:
+        """收集各分析师的输出"""
+        outputs = {}
+
+        report_files = [
+            'fundamental_analysis_report.md',
+            'risk_assessment_report.md',
+            'industry_analysis_report.md',
+            'quantitative_validation_report.md',
+            'final_investment_analysis.md'
+        ]
+
+        for file_name in report_files:
+            try:
+                if os.path.exists(file_name):
+                    with open(file_name, 'r', encoding='utf-8') as f:
+                        outputs[file_name] = f.read()
+                else:
+                    outputs[file_name] = f"文件 {file_name} 未生成"
+            except Exception as e:
+                outputs[file_name] = f"读取文件失败: {str(e)}"
+
+        return outputs
+
+    def _calculate_collaboration_scores(self, outputs: Dict[str, Any]) -> Dict[str, float]:
+        """基于协作分析结果计算评分"""
+        scores = {
+            'fundamental_score': 0.0,
+            'risk_score': 0.0,
+            'industry_score': 0.0,
+            'quantitative_score': 0.0,
+            'overall_score': 0.0
+        }
+
+        try:
+            # 从最终分析报告中提取评分
+            final_report = outputs.get('final_investment_analysis.md', '')
+            if final_report and "未生成" not in final_report:
+                # 尝试从报告中提取评分信息
+                import re
+
+                # 查找评分模式
+                score_patterns = {
+                    'fundamental_score': r'基本面[评分得分].*?(\d+(?:\.\d+)?)',
+                    'risk_score': r'风险[评分得分].*?(\d+(?:\.\d+)?)',
+                    'industry_score': r'行业[评分得分].*?(\d+(?:\.\d+)?)',
+                    'overall_score': r'综合[评分总分].*?(\d+(?:\.\d+)?)'
+                }
+
+                for score_type, pattern in score_patterns.items():
+                    match = re.search(pattern, final_report)
+                    if match:
+                        scores[score_type] = float(match.group(1))
+
+            # 如果从报告中无法提取评分，使用基于输出质量的估算
+            if scores['overall_score'] == 0:
+                quality_score = self._estimate_analysis_quality(outputs)
+                scores['overall_score'] = quality_score
+
+            # 确保分数在合理范围内
+            for key in scores:
+                scores[key] = max(0, min(100, scores[key]))
+
+        except Exception as e:
+            logger.error(f"计算协作评分时出错: {str(e)}")
 
         return scores
 
-    def generate_analysis_summary(self, analysis_result: Dict[str, Any]) -> str:
-        """生成分析摘要"""
-        scores = self.calculate_analysis_score(analysis_result)
+    def _estimate_analysis_quality(self, outputs: Dict[str, Any]) -> float:
+        """基于输出质量估算分析评分"""
+        quality_score = 60.0  # 基础分
 
-        summary = f"""
-分析摘要：
-- 基本面评分: {scores['fundamental_score']:.1f}/100
-- 风险评分: {scores['risk_score']:.1f}/100
-- 行业评分: {scores['industry_score']:.1f}/100
-- 综合评分: {scores['overall_score']:.1f}/100
+        try:
+            # 检查报告完整性
+            complete_reports = 0
+            total_reports = len(outputs)
 
-投资建议：{self._get_recommendation(scores)}
-"""
+            for file_name, content in outputs.items():
+                if content and "未生成" not in content and "失败" not in content:
+                    complete_reports += 1
 
-        return summary
+                    # 检查内容质量
+                    if len(content) > 500:  # 内容足够详细
+                        quality_score += 5
+                    if "分析" in content or "评估" in content:  # 包含分析内容
+                        quality_score += 3
+                    if "建议" in content or "结论" in content:  # 包含建议结论
+                        quality_score += 2
 
-    def _get_recommendation(self, scores: Dict[str, float]) -> str:
-        """根据评分给出投资建议"""
-        overall = scores['overall_score']
+            completeness_ratio = complete_reports / total_reports
+            quality_score *= completeness_ratio
 
-        if overall >= 80:
-            return "强烈买入"
-        elif overall >= 70:
-            return "买入"
-        elif overall >= 60:
-            return "增持"
-        elif overall >= 50:
-            return "持有"
-        elif overall >= 40:
-            return "减持"
-        else:
-            return "卖出"
+            return min(100, max(0, quality_score))
 
+        except Exception as e:
+            logger.error(f"估算分析质量时出错: {str(e)}")
+            return 60.0
 
-# 使用示例
-if __name__ == "__main__":
-    # 创建分析团队实例
-    analysis_crew = AnalysisCrew()
+    def _generate_final_recommendation(self, outputs: Dict[str, Any],
+                                     scores: Dict[str, float]) -> Dict[str, Any]:
+        """生成最终投资建议"""
+        recommendation = {
+            'action': '持有',
+            'confidence': 0.0,
+            'reasoning': '',
+            'time_horizon': '中期',
+            'risk_level': '中等'
+        }
 
-    # 执行分析示例
-    result = analysis_crew.execute_analysis("苹果公司", "AAPL")
-    print("分析结果:", result)
+        try:
+            # 从最终报告中提取建议
+            final_report = outputs.get('final_investment_analysis.md', '')
+            if final_report and "未生成" not in final_report:
+                # 提取投资建议
+                if "买入" in final_report:
+                    recommendation['action'] = "买入"
+                    recommendation['confidence'] = 0.8
+                elif "卖出" in final_report:
+                    recommendation['action'] = "卖出"
+                    recommendation['confidence'] = 0.8
+                else:
+                    recommendation['action'] = "持有"
+                    recommendation['confidence'] = 0.6
 
-    if result['success']:
-        # 计算评分
-        scores = analysis_crew.calculate_analysis_score(result['data'])
-        print("分析评分:", scores)
+                # 提取信心度和理由
+                recommendation['reasoning'] = "基于多智能体协作分析的综合判断"
 
-        # 生成摘要
-        summary = analysis_crew.generate_analysis_summary(result['data'])
-        print("分析摘要:", summary)
+                # 根据评分调整信心度
+                if scores['overall_score'] >= 80:
+                    recommendation['confidence'] = min(1.0, recommendation['confidence'] + 0.2)
+                elif scores['overall_score'] < 60:
+                    recommendation['confidence'] = max(0.3, recommendation['confidence'] - 0.2)
+
+        except Exception as e:
+            logger.error(f"生成最终建议时出错: {str(e)}")
+
+        return recommendation
+
+    def _analyze_collaboration_quality(self, outputs: Dict[str, Any]) -> Dict[str, Any]:
+        """分析智能体协作质量"""
+        metrics = {
+            'total_agents': 5,
+            'active_agents': 0,
+            'collaboration_depth': 'low',
+            'consensus_level': 0.0,
+            'discussion_events': 0,
+            'conflict_resolution': 0
+        }
+
+        try:
+            # 分析各报告的协作迹象
+            active_count = 0
+            collaboration_indicators = 0
+
+            for file_name, content in outputs.items():
+                if content and "未生成" not in content and "失败" not in content:
+                    active_count += 1
+
+                    # 检查协作深度指标
+                    if any(term in content for term in ["讨论", "辩论", "协商", "综合"]):
+                        collaboration_indicators += 1
+                    if "一致" in content or "共识" in content:
+                        metrics['consensus_level'] += 0.25
+                    if "分歧" in content or "差异" in content:
+                        metrics['discussion_events'] += 1
+                    if "解决" in content or "协调" in content:
+                        metrics['conflict_resolution'] += 1
+
+            metrics['active_agents'] = active_count
+
+            # 评估协作深度
+            if collaboration_indicators >= 3:
+                metrics['collaboration_depth'] = 'high'
+            elif collaboration_indicators >= 2:
+                metrics['collaboration_depth'] = 'medium'
+
+            # 计算共识水平
+            metrics['consensus_level'] = min(1.0, metrics['consensus_level'])
+
+        except Exception as e:
+            logger.error(f"分析协作质量时出错: {str(e)}")
+
+        return metrics
+
+    def get_crew_info(self) -> Dict[str, Any]:
+        """获取团队信息"""
+        return {
+            'name': '分析团队 (多智能体深度协作版)',
+            'agents': [
+                '基本面分析师',
+                '风险评估专家',
+                '行业专家',
+                '量化分析师',
+                '分析协调员'
+            ],
+            'description': '使用CrewAI实现深度协作分析，通过智能体讨论和辩论形成投资判断',
+            'features': [
+                '多维度分析协作',
+                '智能体间讨论和辩论',
+                '统计验证和量化支持',
+                '集体决策和共识形成',
+                '层次化分析和整合'
+            ],
+            'process': 'hierarchical (深度协作分析流程)'
+        }

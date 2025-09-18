@@ -147,3 +147,56 @@ sentiment_analysis_task:
     市场情绪分析报告，包含情绪指标、
     趋势分析和预期评估。
   agent: market_sentiment_analyst
+
+# 协作任务
+dynamic_task_allocation_task:
+  description: >
+    动态任务分配和负载均衡：
+    1. 分析待处理任务的优先级和复杂度
+    2. 评估各智能体的当前负载和能力匹配度
+    3. 实现最优的任务分配算法
+    4. 监控任务执行进度和完成质量
+    5. 动态调整任务分配策略
+  expected_output: >
+    任务分配报告，包含分配策略、负载分析、
+    效率评估和优化建议。
+  agent: task_allocation_coordinator
+
+collective_decision_task:
+  description: >
+    集体投资决策制定：
+    1. 组织投资决策委员会讨论
+    2. 协调不同专家的意见和观点
+    3. 实施多种决策机制（投票、共识、加权等）
+    4. 记录决策过程和理由
+    5. 形成最终的投资决策建议
+  expected_output: >
+    集体决策报告，包含决策过程、专家意见、
+    投票结果和最终决策建议。
+  agent: decision_committee_chairman
+
+collaboration_optimization_task:
+  description: >
+    协作效率优化分析：
+    1. 监控智能体间的通信模式
+    2. 分析协作效率和瓶颈
+    3. 识别工作流程中的问题
+    4. 提供协作优化建议
+    5. 实施协作改进措施
+  expected_output: >
+    协作优化报告，包含效率分析、瓶颈识别、
+    优化建议和改进效果评估。
+  agent: collaboration_optimizer
+
+collaboration_coordination_task:
+  description: >
+    协作协调和整合：
+    1. 协调各团队间的协作活动
+    2. 整合不同智能体的分析结果
+    3. 解决协作过程中的冲突
+    4. 优化跨团队工作流程
+    5. 确保协作目标的达成
+  expected_output: >
+    协作协调报告，包含协作活动记录、
+    冲突解决过程和整合结果。
+  agent: collaboration_optimizer

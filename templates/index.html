@@ -157,21 +157,8 @@
                     <label for="ticker">股票代码:</label>
                     <input type="text" id="ticker" name="ticker" required placeholder="例如：AAPL">
                 </div>
-                <button type="submit" id="analyzeButton">开始分析</button>
+                <button type="submit">开始分析</button>
             </form>
-            <div id="processingIndicator" style="display: none;">
-                <div class="processing">
-                    <div class="spinner"></div>
-                    <p>正在分析中，请稍候...</p>
-                    <div class="processing-steps">
-                        <div class="step">1. 数据收集</div>
-                        <div class="step">2. 财务分析</div>
-                        <div class="step">3. 行业对比</div>
-                        <div class="step">4. 风险评估</div>
-                        <div class="step">5. 生成报告</div>
-                    </div>
-                </div>
-            </div>
             <div id="singleResult"></div>
         </div>
 
@@ -290,14 +277,6 @@
             const formData = new FormData(e.target);
             const data = Object.fromEntries(formData);
 
-            // 显示处理中状态并禁用按钮
-            const analyzeButton = document.getElementById('analyzeButton');
-            const processingIndicator = document.getElementById('processingIndicator');
-            
-            analyzeButton.disabled = true;
-            analyzeButton.innerHTML = '分析中...';
-            processingIndicator.style.display = 'block';
-
             fetch('/analyze', {
                 method: 'POST',
                 headers: {
@@ -307,15 +286,6 @@
             })
             .then(response => response.json())
             .then(data => {
-                // 隐藏处理中状态并恢复按钮
-                const analyzeButton = document.getElementById('analyzeButton');
-                const processingIndicator = document.getElementById('processingIndicator');
-                
-                // 恢复按钮状态
-                analyzeButton.disabled = false;
-                analyzeButton.innerHTML = '开始分析';
-                processingIndicator.style.display = 'none';
-
                 const resultDiv = document.getElementById('singleResult');
                 if (data.success) {
                     resultDiv.innerHTML = `
@@ -333,15 +303,6 @@
                 }
             })
             .catch(error => {
-                // 隐藏处理中状态并恢复按钮
-                const analyzeButton = document.getElementById('analyzeButton');
-                const processingIndicator = document.getElementById('processingIndicator');
-                
-                // 恢复按钮状态
-                analyzeButton.disabled = false;
-                analyzeButton.innerHTML = '开始分析';
-                processingIndicator.style.display = 'none';
-                
                 document.getElementById('singleResult').innerHTML = `<div class="error">请求失败: ${error}</div>`;
             });
         });

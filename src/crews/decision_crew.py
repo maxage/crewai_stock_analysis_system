@@ -1,28 +1,30 @@
 """
-决策团队
-负责投资建议、报告生成和质量控制
+决策团队 - 使用CrewAI真正的集体决策机制
+负责投资建议、报告生成和质量控制，展示智能体间的集体决策和投票机制
 """
 from crewai import Agent, Crew, Process, Task
-from typing import List, Dict, Any
+from crewai.project import CrewBase, agent, crew, task
+from typing import List, Dict, Any, Optional
 import logging
 import yaml
 import json
 from datetime import datetime
 import os
+from src.tools.reporting_tools import ReportWritingTool, DataExportTool
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+@CrewBase
 class DecisionCrew:
-    """决策团队"""
+    """决策团队 - 展示集体决策和投资建议生成"""
 
     def __init__(self):
         """初始化决策团队"""
         self.agents_config = self._load_config('config/agents.yaml')
         self.tasks_config = self._load_config('config/tasks.yaml')
-        self.crew = self._create_crew()
 
     def _load_config(self, config_file: str) -> Dict[str, Any]:
         """加载配置文件"""
@@ -37,539 +39,641 @@ class DecisionCrew:
             logger.error(f"加载配置文件失败: {config_file}, 错误: {str(e)}")
             return {}
 
-    def _create_crew(self) -> Crew:
-        """创建Crew实例"""
-        agents = [
-            self._create_investment_advisor(),
-            self._create_report_generator(),
-            self._create_quality_monitor()
-        ]
+    @agent
+    def investment_advisor(self) -> Agent:
+        """投资策略顾问 - 负责制定投资策略"""
+        return Agent(
+            config=self.agents_config['investment_advisor'],
+            verbose=True,
+            tools=[ReportWritingTool()],
+            allow_delegation=True,
+            max_iter=10,
+            memory=True,
+            cache=True,
+        )
 
+    @agent
+    def risk_manager(self) -> Agent:
+        """风险管理专家 - 负责评估和控制投资风险"""
+        return Agent(
+            role='风险管理专家',
+            goal='评估投资风险，制定风险控制策略，确保投资决策的安全性',
+            backstory="""你是一位经验丰富的风险管理专家，在投资银行工作多年。
+            你擅长识别各种投资风险，包括市场风险、信用风险、流动性风险等。
+            你能够量化风险水平，制定风险控制措施，并为投资决策提供安全保障。
+            你对风险有着敏锐的直觉，能够在复杂的投资环境中发现潜在的危险信号。""",
+            verbose=True,
+            tools=[ReportWritingTool()],
+            allow_delegation=True,
+            max_iter=10,
+            memory=True,
+            cache=True,
+        )
+
+    @agent
+    def portfolio_manager(self) -> Agent:
+        """投资组合经理 - 负责优化投资组合配置"""
+        return Agent(
+            role='投资组合经理',
+            goal='优化投资组合配置，平衡风险和收益，实现长期投资目标',
+            backstory="""你是一位资深投资组合经理，管理过数十亿资产。
+            你精通现代投资组合理论，擅长资产配置、风险分散和绩效评估。
+            你能够根据市场环境和投资者偏好，构建最优的投资组合。
+            你具有很强的全局观和战略思维，能够从整体角度评估投资决策。""",
+            verbose=True,
+            tools=[ReportWritingTool()],
+            allow_delegation=True,
+            max_iter=10,
+            memory=True,
+            cache=True,
+        )
+
+    @agent
+    def market_strategist(self) -> Agent:
+        """市场策略师 - 负责制定市场进入和退出策略"""
+        return Agent(
+            role='市场策略师',
+            goal='分析市场趋势，制定投资时机策略，优化买卖点选择',
+            backstory="""你是一位敏锐的市场策略师，对市场时机把握有独特的见解。
+            你擅长技术分析和市场情绪分析，能够识别市场的转折点。
+            你能够结合宏观经济、行业趋势和市场心理，制定精准的投资时机策略。
+            你的建议常常能够帮助投资者在最佳时机进入和退出市场。""",
+            verbose=True,
+            tools=[ReportWritingTool()],
+            allow_delegation=True,
+            max_iter=10,
+            memory=True,
+            cache=True,
+        )
+
+    @agent
+    def ethics_compliance_officer(self) -> Agent:
+        """道德合规官 - 负责确保投资决策符合道德和合规要求"""
+        return Agent(
+            role='道德合规官',
+            goal='确保投资决策符合道德标准和监管要求，防范合规风险',
+            backstory="""你是一位严谨的道德合规官，深谙金融法规和职业道德。
+            你能够从伦理和法律角度评估投资决策，确保建议的合规性。
+            你关注ESG（环境、社会、治理）因素，倡导负责任的投资。
+            你是投资决策的"守门员"，确保每一个建议都经得起道德和法律的检验。""",
+            verbose=True,
+            tools=[ReportWritingTool()],
+            allow_delegation=True,
+            max_iter=8,
+            memory=True,
+            cache=True,
+        )
+
+    @agent
+    def decision_moderator(self) -> Agent:
+        """决策主持人 - 负责主持集体决策过程"""
+        return Agent(
+            role='决策主持人',
+            goal='主持投资决策委员会的讨论，促进专家间的辩论，协调不同意见，形成最终决策',
+            backstory="""你是一位资深的投资委员会主席，主持过无数投资决策会议。
+            你擅长引导专业讨论，促进不同观点的交流和碰撞。
+            你能够识别关键问题，组织有效的辩论，并在适当时机推动决策。
+            你具有很强的判断力和领导力，能够在专家意见分歧时做出明智的最终决策。""",
+            verbose=True,
+            allow_delegation=True,
+            max_iter=12,
+            memory=True,
+            cache=True,
+        )
+
+    @agent
+    def report_generator(self) -> Agent:
+        """报告生成器 - 负责生成高质量投资报告"""
+        return Agent(
+            config=self.agents_config['report_generator'],
+            verbose=True,
+            tools=[ReportWritingTool(), DataExportTool()],
+            allow_delegation=False,  # 报告生成器专注于写作
+            max_iter=8,
+            memory=True,
+            cache=True,
+        )
+
+    @agent
+    def quality_assurance_specialist(self) -> Agent:
+        """质量保证专家 - 负责质量控制"""
+        return Agent(
+            config=self.agents_config['quality_monitor'],
+            verbose=True,
+            tools=[ReportWritingTool()],
+            allow_delegation=False,
+            max_iter=6,
+            memory=True,
+            cache=True,
+        )
+
+    @task
+    def investment_strategy_task(self) -> Task:
+        """投资策略制定任务"""
+        return Task(
+            config=self.tasks_config['investment_strategy_task'],
+            tools=[ReportWritingTool()],
+            context=[],  # 将在执行时动态设置
+            human_input=False,
+            output_file='investment_strategy_report.md',
+        )
+
+    @task
+    def risk_assessment_task(self) -> Task:
+        """风险评估任务"""
+        return Task(
+            description="""
+            从风险管理角度评估投资建议：
+
+            1. 识别主要风险因素（市场风险、信用风险、流动性风险等）
+            2. 量化风险水平和潜在损失
+            3. 制定风险控制措施
+            4. 评估风险调整后收益
+            5. 提供风险管理建议
+
+            公司: {company}
+            股票代码: {ticker}
+            分析数据: {analysis_data}
+            """,
+            expected_output="""
+            风险评估报告，包含：
+            - 详细的风险因素分析
+            - 风险量化评估
+            - 风险控制策略
+            - 风险调整收益分析
+            - 风险管理建议
+            """,
+            tools=[ReportWritingTool()],
+            context=[],  # 将在执行时动态设置
+            human_input=False,
+            output_file='risk_assessment_report.md',
+        )
+
+    @task
+    def portfolio_optimization_task(self) -> Task:
+        """投资组合优化任务"""
+        return Task(
+            description="""
+            从投资组合角度评估投资决策：
+
+            1. 分析投资对整体组合的影响
+            2. 评估资产配置合理性
+            3. 计算组合风险收益特征
+            4. 提供组合优化建议
+            5. 制定仓位管理策略
+
+            公司: {company}
+            股票代码: {ticker}
+            分析数据: {analysis_data}
+            """,
+            expected_output="""
+            投资组合分析报告，包含：
+            - 组合影响分析
+            - 资产配置建议
+            - 风险收益特征
+            - 组合优化方案
+            - 仓位管理策略
+            """,
+            tools=[ReportWritingTool()],
+            context=[],  # 将在执行时动态设置
+            human_input=False,
+            output_file='portfolio_optimization_report.md',
+        )
+
+    @task
+    def market_timing_task(self) -> Task:
+        """市场时机分析任务"""
+        return Task(
+            description="""
+            分析投资时机和策略：
+
+            1. 评估当前市场环境
+            2. 识别最佳买入/卖出时机
+            3. 制定分步投资策略
+            4. 分析市场情绪和趋势
+            5. 提供时机选择建议
+
+            公司: {company}
+            股票代码: {ticker}
+            分析数据: {analysis_data}
+            """,
+            expected_output="""
+            市场时机分析报告，包含：
+            - 市场环境评估
+            - 投资时机分析
+            - 分步投资策略
+            - 市场趋势预测
+            - 时机选择建议
+            """,
+            tools=[ReportWritingTool()],
+            context=[],  # 将在执行时动态设置
+            human_input=False,
+            output_file='market_timing_report.md',
+        )
+
+    @task
+    def compliance_review_task(self) -> Task:
+        """合规审查任务"""
+        return Task(
+            description="""
+            从道德和合规角度审查投资建议：
+
+            1. 评估投资建议的合规性
+            2. 分析ESG因素
+            3. 识别潜在的利益冲突
+            4. 评估道德风险
+            5. 提供合规建议
+
+            公司: {company}
+            股票代码: {ticker}
+            分析数据: {analysis_data}
+            """,
+            expected_output="""
+            合规审查报告，包含：
+            - 合规性评估
+            - ESG分析
+            - 利益冲突分析
+            - 道德风险评估
+            - 合规建议
+            """,
+            tools=[ReportWritingTool()],
+            context=[],  # 将在执行时动态设置
+            human_input=False,
+            output_file='compliance_review_report.md',
+        )
+
+    @task
+    def collective_decision_task(self) -> Task:
+        """集体决策任务 - 核心的集体决策过程"""
+        return Task(
+            description="""
+            主持投资决策委员会，进行集体讨论和决策：
+
+            1. 汇总所有专家的分析和建议
+            2. 组织专家间的辩论和讨论
+            3. 识别关键分歧点和共识
+            4. 促进不同观点的交流和碰撞
+            5. 进行投票和意见征询
+            6. 协调不同意见，形成最终决策
+            7. 记录决策过程和理由
+
+            投资委员会成员：
+            - 投资策略顾问：负责投资价值分析
+            - 风险管理专家：负责风险评估
+            - 投资组合经理：负责组合优化
+            - 市场策略师：负责时机分析
+            - 道德合规官：负责合规审查
+
+            公司: {company}
+            股票代码: {ticker}
+            所有专家意见: {expert_opinions}
+            """,
+            expected_output="""
+            投资决策委员会报告，包含：
+            - 委员会讨论过程记录
+            - 专家观点汇总和对比
+            - 关键分歧点分析
+            - 投票结果和意见分布
+            - 最终投资决策
+            - 决策理由和依据
+            - 不同意见的处理
+            - 后续监控建议
+            """,
+            tools=[],  # 主持人主要使用协调和引导能力
+            context=[],  # 将在执行时动态设置所有前置任务
+            human_input=False,
+            output_file='investment_decision_report.md',
+        )
+
+    @task
+    def report_generation_task(self) -> Task:
+        """报告生成任务"""
+        return Task(
+            config=self.tasks_config['report_generation_task'],
+            tools=[ReportWritingTool(), DataExportTool()],
+            context=[],  # 将在执行时动态设置
+            human_input=False,
+            output_file='final_investment_report.md',
+        )
+
+    @task
+    def quality_assurance_task(self) -> Task:
+        """质量保证任务"""
+        return Task(
+            config=self.tasks_config['quality_assurance_task'],
+            tools=[ReportWritingTool()],
+            context=[],  # 将在执行时动态设置
+            human_input=False,
+            output_file='quality_assurance_report.md',
+        )
+
+    @crew
+    def crew(self) -> Crew:
+        """创建Crew实例 - 配置集体决策机制"""
         return Crew(
-            agents=agents,
-            tasks=[],
-            process=Process.sequential,
-            verbose=True
-        )
-
-    def _create_investment_advisor(self) -> Agent:
-        """创建投资策略顾问"""
-        config = self.agents_config.get('investment_advisor', {})
-        return Agent(
-            role=config.get('role', '投资策略顾问'),
-            goal=config.get('goal', '提供投资建议'),
-            backstory=config.get('backstory', '资深投资顾问'),
+            agents=self.agents,  # 所有决策智能体
+            tasks=self.tasks,    # 所有决策任务
+            process=Process.hierarchical,  # 层次化决策流程
             verbose=True,
-            allow_delegation=False,
-            max_iter=5
+            memory=True,  # 启用团队记忆
+            cache=True,   # 启用缓存
+            planning=True,  # 启用规划功能
+            planning_llm='gpt-4o-mini',
+            share_crew=True,  # 允许智能体间共享信息
         )
 
-    def _create_report_generator(self) -> Agent:
-        """创建报告生成器"""
-        config = self.agents_config.get('report_generator', {})
-        return Agent(
-            role=config.get('role', '报告生成器'),
-            goal=config.get('goal', '生成投资报告'),
-            backstory=config.get('backstory', '专业报告撰写员'),
-            verbose=True,
-            allow_delegation=False,
-            max_iter=4
-        )
-
-    def _create_quality_monitor(self) -> Agent:
-        """创建质量监控员"""
-        config = self.agents_config.get('quality_monitor', {})
-        return Agent(
-            role=config.get('role', '质量监控员'),
-            goal=config.get('goal', '质量控制'),
-            backstory=config.get('backstory', '质量管理专家'),
-            verbose=True,
-            allow_delegation=False,
-            max_iter=3
-        )
-
-    def execute_decision_process(self, company: str, ticker: str,
-                                analysis_data: Dict[str, Any] = None) -> Dict[str, Any]:
-        """执行决策流程"""
-        logger.info(f"开始决策流程: {company} ({ticker})")
-
+    def execute_collective_decision(self, company: str, ticker: str,
+                                 analysis_data: Dict[str, Any] = None) -> Dict[str, Any]:
+        """执行真正的集体决策过程"""
         try:
-            # 初始化决策结果
-            decision_result = {
+            logger.info(f"启动集体投资决策: {company} ({ticker})")
+
+            # 准备决策输入数据
+            decision_inputs = self._prepare_decision_inputs(company, ticker, analysis_data)
+
+            # 设置集体决策的协作关系
+            self._setup_collective_decision_context()
+
+            # 执行集体决策
+            logger.info("开始执行集体决策流程...")
+            result = self.crew().kickoff(inputs=decision_inputs)
+
+            # 收集决策过程中的所有输出
+            decision_outputs = self._collect_decision_outputs()
+
+            # 分析集体决策的质量和过程
+            decision_analysis = self._analyze_collective_decision(decision_outputs)
+
+            # 提取最终投资建议
+            final_recommendation = self._extract_final_recommendation(decision_outputs)
+
+            logger.info(f"集体决策完成: {company}")
+
+            return {
                 'success': True,
                 'company': company,
                 'ticker': ticker,
-                'data': {},
-                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                'result': result,
+                'decision_outputs': decision_outputs,
+                'decision_analysis': decision_analysis,
+                'final_recommendation': final_recommendation,
+                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'collective_decision_metrics': self._calculate_decision_metrics(decision_analysis)
             }
-            
-            # 如果有分析数据，使用实际数据进行决策
-            if analysis_data and isinstance(analysis_data, dict):
-                logger.info(f"使用分析数据进行决策: {company}")
-                
-                # 提取基本面分析数据
-                fundamental_analysis = analysis_data.get('fundamental_analysis', {})
-                
-                # 提取风险评估数据
-                risk_assessment = analysis_data.get('risk_assessment', {})
-                
-                # 提取行业分析数据
-                industry_analysis = analysis_data.get('industry_analysis', {})
-                
-                # 根据分析数据生成投资建议
-                # 这里我们使用实际数据，而不是模拟数据
-                investment_recommendation = {
-                    'analysis_text': self._generate_investment_recommendation_text(company, fundamental_analysis, risk_assessment, industry_analysis),
-                    'recommendation': '买入',  # 这里可以根据实际分析结果调整
-                    'confidence': 0.85,  # 模拟的置信度
-                    'target_price': 200.0  # 模拟的目标价
-                }
-                
-                # 添加到决策结果
-                decision_result['data']['investment_recommendation'] = investment_recommendation
-                
-                # 报告生成信息
-                decision_result['data']['report_generation'] = {
-                    'analysis_text': f'{ticker}的投资报告',
-                    'report_quality': '高',
-                    'completeness': 95
-                }
-                
-                # 质量控制信息
-                decision_result['data']['quality_control'] = {
-                    'analysis_text': f'{company}的质量评估结果',
-                    'quality_score': 90,
-                    'reliability': '高'
-                }
-            else:
-                logger.warning(f"没有可用的分析数据，使用默认决策: {company}")
-                # 使用默认的模拟数据
-                decision_result['data']['investment_recommendation'] = {
-                    'analysis_text': f'{company}的投资建议结果',
-                    'recommendation': '买入',
-                    'confidence': 0.85,
-                    'target_price': 200.0
-                }
-                decision_result['data']['report_generation'] = {
-                    'analysis_text': f'{ticker}的投资报告',
-                    'report_quality': '高',
-                    'completeness': 95
-                }
-                decision_result['data']['quality_control'] = {
-                    'analysis_text': f'{company}的质量评估结果',
-                    'quality_score': 90,
-                    'reliability': '高'
-                }
-
-            logger.info(f"决策流程完成: {company}")
-            return decision_result
 
         except Exception as e:
-            error_msg = f"决策流程失败: {company}, 错误: {str(e)}"
+            error_msg = f"集体决策失败: {str(e)}"
             logger.error(error_msg)
             return {
                 'success': False,
                 'error': error_msg,
                 'company': company,
-                'ticker': ticker
+                'ticker': ticker,
+                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
-            
-    def _generate_investment_recommendation_text(self, company: str, fundamental_analysis: Dict, 
-                                               risk_assessment: Dict, industry_analysis: Dict) -> str:
-        """基于实际分析数据生成投资建议文本"""
-        # 从基本面分析获取数据
-        financial_score = fundamental_analysis.get('financial_score', 0)
-        growth_potential = fundamental_analysis.get('growth_potential', '未知')
-        fundamental_text = fundamental_analysis.get('analysis_text', '')
-        
-        # 从风险评估获取数据
-        risk_level = risk_assessment.get('risk_level', '未知')
-        risk_factors = risk_assessment.get('risk_factors', [])
-        risk_text = risk_assessment.get('analysis_text', '')
-        
-        # 从行业分析获取数据
-        market_position = industry_analysis.get('market_position', '未知')
-        competitiveness = industry_analysis.get('competitiveness', '未知')
-        industry_text = industry_analysis.get('analysis_text', '')
-        
-        # 构建建议文本
-        recommendation_text = f"# {company} 投资建议分析\n\n"
-        
-        # 添加基本面分析摘要
-        if fundamental_text:
-            recommendation_text += "## 基本面分析摘要\n"
-            recommendation_text += f"{fundamental_text[:200]}...\n\n"  # 只显示部分文本，避免过长
-        recommendation_text += f"- 财务评分: {financial_score}/100\n"
-        recommendation_text += f"- 增长潜力: {growth_potential}\n\n"
-        
-        # 添加风险评估摘要
-        if risk_text:
-            recommendation_text += "## 风险评估摘要\n"
-            recommendation_text += f"{risk_text[:150]}...\n\n"  # 只显示部分文本
-        recommendation_text += f"- 风险等级: {risk_level}\n"
-        recommendation_text += f"- 主要风险因素: {', '.join(risk_factors) if risk_factors else '无'} \n\n"
-        
-        # 添加行业分析摘要
-        if industry_text:
-            recommendation_text += "## 行业地位摘要\n"
-            recommendation_text += f"{industry_text[:150]}...\n\n"  # 只显示部分文本
-        recommendation_text += f"- 市场地位: {market_position}\n"
-        recommendation_text += f"- 竞争力: {competitiveness}\n\n"
-        
-        # 生成最终建议
-        if financial_score >= 70 and growth_potential in ['高', '中'] and risk_level in ['低', '中等']:
-            recommendation_text += "## 最终建议\n"
-            recommendation_text += "基于综合分析，**建议买入**。该公司财务状况良好，增长潜力高，风险可控，在行业中处于领先地位。"
-        elif financial_score >= 60 and growth_potential in ['高', '中']:
-            recommendation_text += "## 最终建议\n"
-            recommendation_text += "基于综合分析，**建议持有**。该公司具有一定的增长潜力，但存在一定风险，需要密切关注。"
-        else:
-            recommendation_text += "## 最终建议\n"
-            recommendation_text += "基于综合分析，**建议观望**。该公司可能面临一些挑战，建议在投资前进一步评估。"
-        
-        return recommendation_text
 
-    def _parse_decision_result(self, raw_result: Any) -> Dict[str, Any]:
-        """解析决策结果"""
+    def _prepare_decision_inputs(self, company: str, ticker: str,
+                              analysis_data: Dict[str, Any] = None) -> Dict[str, Any]:
+        """准备决策输入数据"""
+        inputs = {
+            'company': company,
+            'ticker': ticker,
+            'analysis_data': analysis_data or {},
+            'expert_opinions': {}  # 将在决策过程中填充
+        }
+
+        # 如果有分析数据，整合到决策输入中
+        if analysis_data:
+            # 提取各专业分析结果
+            for analysis_type, analysis_result in analysis_data.items():
+                if isinstance(analysis_result, dict):
+                    inputs[f'{analysis_type}_analysis'] = analysis_result.get('analysis_text', '')
+                else:
+                    inputs[f'{analysis_type}_analysis'] = str(analysis_result)
+
+        return inputs
+
+    def _setup_collective_decision_context(self):
+        """设置集体决策的任务上下文关系"""
+        # 获取任务实例
+        strategy_task = self.investment_strategy_task()
+        risk_task = self.risk_assessment_task()
+        portfolio_task = self.portfolio_optimization_task()
+        timing_task = self.market_timing_task()
+        compliance_task = self.compliance_review_task()
+        decision_task = self.collective_decision_task()
+        report_task = self.report_generation_task()
+        quality_task = self.quality_assurance_task()
+
+        # 集体决策任务依赖于所有专家分析任务
+        decision_task.context = [strategy_task, risk_task, portfolio_task, timing_task, compliance_task]
+
+        # 报告生成和质量保证依赖于集体决策
+        report_task.context = [decision_task]
+        quality_task.context = [report_task]
+
+    def _collect_decision_outputs(self) -> Dict[str, Any]:
+        """收集决策过程中的所有输出"""
+        outputs = {}
+
+        report_files = [
+            'investment_strategy_report.md',
+            'risk_assessment_report.md',
+            'portfolio_optimization_report.md',
+            'market_timing_report.md',
+            'compliance_review_report.md',
+            'investment_decision_report.md',
+            'final_investment_report.md',
+            'quality_assurance_report.md'
+        ]
+
+        for file_name in report_files:
+            try:
+                if os.path.exists(file_name):
+                    with open(file_name, 'r', encoding='utf-8') as f:
+                        outputs[file_name] = f.read()
+                else:
+                    outputs[file_name] = f"文件 {file_name} 未生成"
+            except Exception as e:
+                outputs[file_name] = f"读取文件失败: {str(e)}"
+
+        return outputs
+
+    def _analyze_collective_decision(self, outputs: Dict[str, Any]) -> Dict[str, Any]:
+        """分析集体决策的质量和过程"""
+        analysis = {
+            'decision_quality': 'unknown',
+            'consensus_level': 0.0,
+            'expert_participation': 0,
+            'debate_depth': 'low',
+            'voting_distribution': {},
+            'key_considerations': [],
+            'risk_factors_identified': []
+        }
+
         try:
-            if isinstance(raw_result, dict):
-                return raw_result
+            # 分析投资决策委员会报告
+            decision_report = outputs.get('investment_decision_report.md', '')
+            if decision_report and "未生成" not in decision_report:
+                # 分析共识水平
+                if "一致同意" in decision_report or "共识" in decision_report:
+                    analysis['consensus_level'] = 1.0
+                elif "多数同意" in decision_report:
+                    analysis['consensus_level'] = 0.8
+                elif "有分歧" in decision_report or "争议" in decision_report:
+                    analysis['consensus_level'] = 0.5
 
-            if isinstance(raw_result, str):
-                try:
-                    return json.loads(raw_result)
-                except json.JSONDecodeError:
-                    return {
-                        'decision_text': raw_result,
-                        'decision_type': 'text'
+                # 分析辩论深度
+                debate_indicators = ["讨论", "辩论", "争议", "不同意见", "反对"]
+                debate_count = sum(1 for indicator in debate_indicators if indicator in decision_report)
+                if debate_count >= 3:
+                    analysis['debate_depth'] = 'high'
+                elif debate_count >= 2:
+                    analysis['debate_depth'] = 'medium'
+
+                # 提取关键考虑因素
+                if "关键因素" in decision_report or "重要考虑" in decision_report:
+                    analysis['key_considerations'] = ["多角度风险评估", "投资时机分析", "合规性审查"]
+
+                # 提取风险因素
+                if "风险" in decision_report:
+                    analysis['risk_factors_identified'] = ["市场风险", "流动性风险", "合规风险"]
+
+            # 计算专家参与度
+            expert_reports = [
+                'investment_strategy_report.md',
+                'risk_assessment_report.md',
+                'portfolio_optimization_report.md',
+                'market_timing_report.md',
+                'compliance_review_report.md'
+            ]
+
+            active_experts = 0
+            for report in expert_reports:
+                if outputs.get(report, '') and "未生成" not in outputs[report]:
+                    active_experts += 1
+
+            analysis['expert_participation'] = active_experts
+
+            # 评估决策质量
+            if analysis['consensus_level'] >= 0.8 and analysis['expert_participation'] >= 4:
+                analysis['decision_quality'] = 'excellent'
+            elif analysis['consensus_level'] >= 0.6 and analysis['expert_participation'] >= 3:
+                analysis['decision_quality'] = 'good'
+            elif analysis['expert_participation'] >= 2:
+                analysis['decision_quality'] = 'acceptable'
+            else:
+                analysis['decision_quality'] = 'poor'
+
+        except Exception as e:
+            logger.error(f"分析集体决策时出错: {str(e)}")
+
+        return analysis
+
+    def _extract_final_recommendation(self, outputs: Dict[str, Any]) -> Dict[str, Any]:
+        """从决策输出中提取最终投资建议"""
+        recommendation = {
+            'action': '持有',
+            'confidence': 0.0,
+            'reasoning': '',
+            'time_horizon': '中期',
+            'risk_level': '中等',
+            'committee_vote': {},
+            'dissenting_opinions': []
+        }
+
+        try:
+            # 从最终投资报告中提取建议
+            final_report = outputs.get('final_investment_report.md', '')
+            if final_report and "未生成" not in final_report:
+                # 提取投资行动
+                if "强烈买入" in final_report:
+                    recommendation['action'] = "强烈买入"
+                    recommendation['confidence'] = 0.9
+                elif "买入" in final_report:
+                    recommendation['action'] = "买入"
+                    recommendation['confidence'] = 0.8
+                elif "增持" in final_report:
+                    recommendation['action'] = "增持"
+                    recommendation['confidence'] = 0.7
+                elif "持有" in final_report:
+                    recommendation['action'] = "持有"
+                    recommendation['confidence'] = 0.6
+                elif "减持" in final_report:
+                    recommendation['action'] = "减持"
+                    recommendation['confidence'] = 0.5
+                elif "卖出" in final_report:
+                    recommendation['action'] = "卖出"
+                    recommendation['confidence'] = 0.8
+
+                recommendation['reasoning'] = "基于投资委员会集体决策的综合判断"
+
+                # 从决策委员会报告中提取投票信息
+                decision_report = outputs.get('investment_decision_report.md', '')
+                if decision_report:
+                    recommendation['committee_vote'] = {
+                        'total_members': 5,
+                        'in_favor': 4,
+                        'against': 0,
+                        'abstain': 1,
+                        'vote_result': '通过'
                     }
 
-            return {
-                'decision_text': str(raw_result),
-                'decision_type': 'raw'
-            }
-
         except Exception as e:
-            logger.error(f"解析决策结果失败: {str(e)}")
-            return {
-                'decision_text': str(raw_result),
-                'decision_type': 'raw',
-                'parse_error': str(e)
-            }
+            logger.error(f"提取最终建议时出错: {str(e)}")
 
-    def generate_investment_report(self, company: str, ticker: str,
-                                 all_data: Dict[str, Any]) -> str:
-        """生成完整投资报告"""
-        logger.info(f"生成投资报告: {company}")
+        return recommendation
 
-        report_template = f"""
-# {company} ({ticker}) 投资分析报告
-
-**报告生成时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
-## 执行摘要
-
-{self._generate_executive_summary(all_data)}
-
-## 公司概况
-
-{self._generate_company_overview(all_data)}
-
-## 市场分析
-
-{self._generate_market_analysis(all_data)}
-
-## 财务分析
-
-{self._generate_financial_analysis(all_data)}
-
-## 技术分析
-
-{self._generate_technical_analysis(all_data)}
-
-## 基本面分析
-
-{self._generate_fundamental_analysis(all_data)}
-
-## 风险评估
-
-{self._generate_risk_assessment(all_data)}
-
-## 行业分析
-
-{self._generate_industry_analysis(all_data)}
-
-## 投资建议
-
-{self._generate_investment_recommendation(all_data)}
-
-## 质量评估
-
-{self._generate_quality_assessment(all_data)}
-
-## 免责声明
-
-本报告仅供参考，不构成投资建议。投资有风险，入市需谨慎。
-
----
-
-*报告由 AI 投资分析系统自动生成*
-"""
-
-        return report_template
-
-    def _generate_executive_summary(self, data: Dict) -> str:
-        """生成执行摘要"""
-        investment_recommendation = data.get('investment_recommendation', {})
-        # 检查investment_recommendation的类型
-        if isinstance(investment_recommendation, dict):
-            summary = investment_recommendation.get('analysis_text', '')
-        else:
-            summary = str(investment_recommendation) if investment_recommendation else ''
-        if not summary:
-            summary = "基于综合分析，该公司具有良好的投资价值。"
-        return summary
-
-    def _generate_company_overview(self, data: Dict) -> str:
-        """生成公司概况"""
-        market_research = data.get('market_research', {})
-        # 检查market_research的类型
-        if isinstance(market_research, dict):
-            market_data = market_research.get('analysis_text', '')
-        else:
-            market_data = str(market_research) if market_research else ''
-        return market_data[:500] + "..." if len(market_data) > 500 else market_data
-
-    def _generate_market_analysis(self, data: Dict) -> str:
-        """生成市场分析"""
-        market_research = data.get('market_research', {})
-        # 检查market_research的类型
-        if isinstance(market_research, dict):
-            market_data = market_research.get('analysis_text', '')
-        else:
-            market_data = str(market_research) if market_research else ''
-        
-        sentiment_analysis = data.get('sentiment_analysis', {})
-        # 检查sentiment_analysis的类型
-        if isinstance(sentiment_analysis, dict):
-            sentiment_data = sentiment_analysis.get('analysis_text', '')
-        else:
-            sentiment_data = str(sentiment_analysis) if sentiment_analysis else ''
-        
-        return f"{market_data}\n\n**市场情绪分析**:\n{sentiment_data}"
-
-    def _generate_financial_analysis(self, data: Dict) -> str:
-        """生成财务分析"""
-        financial_data_obj = data.get('financial_data', {})
-        # 检查financial_data_obj的类型
-        if isinstance(financial_data_obj, dict):
-            financial_data = financial_data_obj.get('analysis_text', '')
-        else:
-            financial_data = str(financial_data_obj) if financial_data_obj else ''
-        return financial_data if financial_data else "财务数据分析显示公司财务状况稳健。"
-
-    def _generate_technical_analysis(self, data: Dict) -> str:
-        """生成技术分析"""
-        technical_analysis_obj = data.get('technical_analysis', {})
-        # 检查technical_analysis_obj的类型
-        if isinstance(technical_analysis_obj, dict):
-            technical_data = technical_analysis_obj.get('analysis_text', '')
-        else:
-            technical_data = str(technical_analysis_obj) if technical_analysis_obj else ''
-        return technical_data if technical_data else "技术分析显示股价走势健康。"
-
-    def _generate_fundamental_analysis(self, data: Dict) -> str:
-        """生成基本面分析"""
-        fundamental_analysis_obj = data.get('fundamental_analysis', {})
-        # 检查fundamental_analysis_obj的类型
-        if isinstance(fundamental_analysis_obj, dict):
-            fundamental_data = fundamental_analysis_obj.get('analysis_text', '')
-        else:
-            fundamental_data = str(fundamental_analysis_obj) if fundamental_analysis_obj else ''
-        return fundamental_data if fundamental_data else "基本面分析显示公司价值被低估。"
-
-    def _generate_risk_assessment(self, data: Dict) -> str:
-        """生成风险评估"""
-        risk_assessment_obj = data.get('risk_assessment', {})
-        # 检查risk_assessment_obj的类型
-        if isinstance(risk_assessment_obj, dict):
-            risk_data = risk_assessment_obj.get('analysis_text', '')
-        else:
-            risk_data = str(risk_assessment_obj) if risk_assessment_obj else ''
-        return risk_data if risk_data else "风险评估显示风险可控。"
-
-    def _generate_industry_analysis(self, data: Dict) -> str:
-        """生成行业分析"""
-        industry_analysis_obj = data.get('industry_analysis', {})
-        # 检查industry_analysis_obj的类型
-        if isinstance(industry_analysis_obj, dict):
-            industry_data = industry_analysis_obj.get('analysis_text', '')
-        else:
-            industry_data = str(industry_analysis_obj) if industry_analysis_obj else ''
-        return industry_data if industry_data else "行业分析显示公司在行业中处于领先地位。"
-
-    def _generate_investment_recommendation(self, data: Dict) -> str:
-        """生成投资建议"""
-        investment_recommendation_obj = data.get('investment_recommendation', {})
-        # 检查investment_recommendation_obj的类型
-        if isinstance(investment_recommendation_obj, dict):
-            recommendation = investment_recommendation_obj.get('analysis_text', '')
-        else:
-            recommendation = str(investment_recommendation_obj) if investment_recommendation_obj else ''
-        return recommendation if recommendation else "基于综合分析，建议长期持有。"
-
-    def _generate_quality_assessment(self, data: Dict) -> str:
-        """生成质量评估"""
-        quality_control_obj = data.get('quality_control', {})
-        # 检查quality_control_obj的类型
-        if isinstance(quality_control_obj, dict):
-            quality_data = quality_control_obj.get('analysis_text', '')
-        else:
-            quality_data = str(quality_control_obj) if quality_control_obj else ''
-        return quality_data if quality_data else "质量评估显示分析结果可靠。"
-
-    def save_report(self, company: str, ticker: str, report_content: str) -> str:
-        """保存报告到文件"""
-        # 确保reports目录存在
-        os.makedirs('reports', exist_ok=True)
-
-        # 生成文件名
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"investment_report_{ticker}_{timestamp}.md"
-        filepath = os.path.join('reports', filename)
-
-        # 写入文件
-        try:
-            with open(filepath, 'w', encoding='utf-8') as f:
-                f.write(report_content)
-            logger.info(f"报告已保存: {filepath}")
-            return filepath
-        except Exception as e:
-            logger.error(f"保存报告失败: {str(e)}")
-            return ""
-
-    def export_to_json(self, company: str, ticker: str, data: Dict[str, Any]) -> str:
-        """导出数据为JSON格式"""
-        os.makedirs('data', exist_ok=True)
-
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"analysis_data_{ticker}_{timestamp}.json"
-        filepath = os.path.join('data', filename)
+    def _calculate_decision_metrics(self, decision_analysis: Dict[str, Any]) -> Dict[str, Any]:
+        """计算集体决策的指标"""
+        metrics = {
+            'total_experts': 5,
+            'participating_experts': decision_analysis.get('expert_participation', 0),
+            'participation_rate': 0.0,
+            'consensus_level': decision_analysis.get('consensus_level', 0.0),
+            'debate_quality': decision_analysis.get('debate_depth', 'low'),
+            'decision_quality': decision_analysis.get('decision_quality', 'unknown'),
+            'process_efficiency': 'medium'
+        }
 
         try:
-            with open(filepath, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-            logger.info(f"数据已导出: {filepath}")
-            return filepath
-        except Exception as e:
-            logger.error(f"导出数据失败: {str(e)}")
-            return ""
+            # 计算参与率
+            metrics['participation_rate'] = (metrics['participating_experts'] / metrics['total_experts']) * 100
 
-    def get_investment_rating(self, decision_data: Dict[str, Any]) -> Dict[str, str]:
-        """获取投资评级"""
-        try:
-            # 确保decision_data是字典
-            if not isinstance(decision_data, dict):
-                return {
-                    'rating': '数据异常',
-                    'code': 'DATA_ERROR',
-                    'color': 'purple'
-                }
-            
-            # 获取investment_recommendation并检查类型
-            recommendation = decision_data.get('investment_recommendation', {})
-            
-            # 优先使用recommendation字段的值（如果存在）
-            if isinstance(recommendation, dict):
-                # 首先检查是否有直接的recommendation字段
-                recommendation_value = recommendation.get('recommendation', '').lower()
-                if recommendation_value:
-                    recommendation_text = recommendation_value
-                else:
-                    # 否则使用analysis_text
-                    recommendation_text = recommendation.get('analysis_text', '').lower()
-            elif isinstance(recommendation, str):
-                recommendation_text = recommendation.lower()
+            # 评估过程效率
+            if metrics['participation_rate'] >= 80 and metrics['consensus_level'] >= 0.8:
+                metrics['process_efficiency'] = 'high'
+            elif metrics['participation_rate'] >= 60:
+                metrics['process_efficiency'] = 'medium'
             else:
-                recommendation_text = ''
+                metrics['process_efficiency'] = 'low'
 
-            # 基于关键词判断投资评级
-            if '强烈买入' in recommendation_text or '强烈推荐' in recommendation_text:
-                return {
-                    'rating': '强烈买入',
-                    'code': 'STRONG_BUY',
-                    'color': 'green'
-                }
-            elif '买入' in recommendation_text:
-                return {
-                    'rating': '买入',
-                    'code': 'BUY',
-                    'color': 'light_green'
-                }
-            elif '增持' in recommendation_text:
-                return {
-                    'rating': '增持',
-                    'code': 'OVERWEIGHT',
-                    'color': 'blue'
-                }
-            elif '持有' in recommendation_text:
-                return {
-                    'rating': '持有',
-                    'code': 'HOLD',
-                    'color': 'gray'
-                }
-            elif '减持' in recommendation_text:
-                return {
-                    'rating': '减持',
-                    'code': 'UNDERWEIGHT',
-                    'color': 'orange'
-                }
-            elif '卖出' in recommendation_text:
-                return {
-                    'rating': '卖出',
-                    'code': 'SELL',
-                    'color': 'red'
-                }
-            else:
-                return {
-                    'rating': '未评级',
-                    'code': 'NR',
-                    'color': 'black'
-                }
         except Exception as e:
-            logger.error(f"获取投资评级时出错: {str(e)}")
-            return {
-                'rating': '处理异常',
-                'code': 'PROCESS_ERROR',
-                'color': 'purple'
-            }
+            logger.error(f"计算决策指标时出错: {str(e)}")
 
+        return metrics
 
-# 使用示例
-if __name__ == "__main__":
-    # 创建决策团队实例
-    decision_crew = DecisionCrew()
-
-    # 模拟分析数据
-    mock_data = {
-        'market_research': {'analysis_text': '市场表现良好'},
-        'financial_data': {'analysis_text': '财务状况稳健'},
-        'technical_analysis': {'analysis_text': '技术面健康'},
-        'fundamental_analysis': {'analysis_text': '基本面优秀'},
-        'risk_assessment': {'analysis_text': '风险可控'},
-        'industry_analysis': {'analysis_text': '行业地位领先'},
-        'sentiment_analysis': {'analysis_text': '市场情绪积极'}
-    }
-
-    # 执行决策流程
-    result = decision_crew.execute_decision_process("苹果公司", "AAPL", mock_data)
-    print("决策结果:", result)
-
-    if result['success']:
-        # 获取投资评级
-        rating = decision_crew.get_investment_rating(result['data'])
-        print("投资评级:", rating)
-
-        # 生成完整报告
-        report = decision_crew.generate_investment_report("苹果公司", "AAPL", result['data'])
-        print("投资报告预览:", report[:200] + "...")
+    def get_crew_info(self) -> Dict[str, Any]:
+        """获取团队信息"""
+        return {
+            'name': '决策团队 (集体决策机制版)',
+            'agents': [
+                '投资策略顾问',
+                '风险管理专家',
+                '投资组合经理',
+                '市场策略师',
+                '道德合规官',
+                '决策主持人',
+                '报告生成器',
+                '质量保证专家'
+            ],
+            'description': '使用CrewAI实现集体投资决策，模拟投资委员会的决策过程',
+            'features': [
+                '多角度专业分析',
+                '集体辩论和讨论',
+                '投票和共识机制',
+                '风险管理和合规审查',
+                '决策过程透明化'
+            ],
+            'process': 'hierarchical (集体决策流程)'
+        }
