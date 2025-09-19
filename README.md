@@ -1043,3 +1043,6 @@ pip install -r requirements-dev.txt
 *最后更新时间：2025-09-18*
 *版本号：v1.0.0*
 *维护者：CrewAI股票分析系统团队*
+## 🚢 Docker 部署
+
+项目提供官方 `Dockerfile` 及 `docker-compose.yml`，可快速构建镜像并运行 Web UI。详细步骤参见 [DEPLOYMENT.md](DEPLOYMENT.md)。默认容器启动 `src/web_app.py`，访问 `http://localhost:5000` 即可体验界面；部署前请准备 `OPENAI_API_KEY`（可复制 `.env.example` 后修改）。
